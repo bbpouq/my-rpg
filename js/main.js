@@ -64,7 +64,7 @@ function loadMap(id, px, py, dir) {
   spawnMapEntities(m);
   updateCamera(true);
   playMapMusic();
-  if (!m.isDungeon && id !== 'mine') { G.safeMap = id; G.safePos = { x: px, y: py }; }
+  if (!m.isDungeon && id !== 'mine') { G.safeMap = id; G.safePos = { x: px, y: py }; if (S.flags.gotSword) saveGame(true); }
   S.map = id;
   G.banner = { text: m.name, t: 2.2 };
   G.warpCD = 0.3;
@@ -477,6 +477,7 @@ function renderWorld() {
   for (const e of list) {
     if (e === p && p.fallScale != null) { ctx.save(); ctx.translate(p.x - cx + 8, p.y - cy + 12); ctx.scale(p.fallScale, p.fallScale); ctx.translate(-8, -12); drawChar(ctx, p.look, p.dir, 0, 0, 0); ctx.restore(); continue; }
     e.draw(ctx, cx, cy);
+    if (e === p && !p.swim) { const tp = p.tileUnder(); if (tp && tp.tall) { const tx = Math.floor(p.cx() / TS), ty = Math.floor(p.cy() / TS); const spr = getTileSprite(tAt(m, tx, ty), (hash2(tx, ty) * 4) | 0, 0, m.theme, null); ctx.drawImage(spr, 0, 10, 16, 6, Math.round(p.x - cx), Math.round(p.y - cy) + 11, 16, 6); } }
   }
   Particles.draw(ctx, cx, cy);
   // 建筑名
@@ -551,6 +552,10 @@ function boot() {
   UI.push(new TitleUI());
   Music.play('title');
   canvas.addEventListener('mousedown', () => Sfx.init());
+  const bgSave = () => { if (G.state === 'play' && S && S.flags.gotSword && !G.dead) saveGame(true); };
+  window.addEventListener('pagehide', bgSave);
+  document.addEventListener('visibilitychange', () => { if (document.hidden) bgSave(); });
+  setInterval(() => { if (G.state === 'play' && !G.locked() && G.map && !G.map.isDungeon && !G.map.mine) bgSave(); }, 60000);
   requestAnimationFrame(frame);
   window.__G = G;
 }
