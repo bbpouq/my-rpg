@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>星屿物语 · Star Isle Tales</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #0c0a14; height: 100%; overflow: hidden; touch-action: none; -webkit-user-select: none; user-select: none; }
+  body { display: flex; align-items: center; justify-content: center; }
+  #game { image-rendering: pixelated; image-rendering: crisp-edges; display: block; background: #000; }
+  #touch { display: none; position: fixed; inset: 0; pointer-events: none; }
+  #touch > * { pointer-events: auto; position: absolute; }
+  #dpad { left: 18px; bottom: 18px; width: 140px; height: 140px; border-radius: 50%; background: rgba(255,255,255,0.12); border: 2px solid rgba(255,255,255,0.25); }
+  #dpad::before { content: ''; position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; margin: -23px; border-radius: 50%; background: rgba(255,255,255,0.18); }
+  .tb { width: 64px; height: 64px; border-radius: 50%; background: rgba(255,255,255,0.16); border: 2px solid rgba(255,255,255,0.35); color: #fff; font: bold 20px sans-serif; display: flex; align-items: center; justify-content: center; text-shadow: 0 1px 2px #000; }
+  .tb.small { width: 46px; height: 46px; font-size: 13px; }
+  .tb.on { background: rgba(255,230,140,0.45); }
+  #ba { right: 22px; bottom: 70px; }
+  #bb { right: 100px; bottom: 26px; }
+  #bm { right: 22px; top: 18px; }
+  #bq { right: 156px; bottom: 100px; }
+  #be { right: 100px; bottom: 112px; }
+</style>
+</head>
+<body>
+<canvas id="game" width="480" height="270"></canvas>
+<div id="touch">
+  <div id="dpad"></div>
+  <div class="tb" id="ba" data-act="a">J</div>
+  <div class="tb" id="bb" data-act="b">K</div>
+  <div class="tb small" id="bm" data-act="menu">菜单</div>
+  <div class="tb small" id="bq" data-act="prev">◀</div>
+  <div class="tb small" id="be" data-act="next">▶</div>
+</div>
+<script src="js/engine.js"></script>
+<script src="js/gfx.js"></script>
+<script src="js/data.js"></script>
+<script src="js/maps.js"></script>
+<script src="js/entities.js"></script>
+<script src="js/systems.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/battle.js"></script>
+<script src="js/story.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
