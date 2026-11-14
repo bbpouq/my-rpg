@@ -92,8 +92,9 @@ redef('BOULDER', (g) => { ell(g, 8, 15, 7, 1, 'rgba(0,0,0,0.25)'); ell(g, 8, 8, 
 redef('CRACK', (g) => { ell(g, 8, 15, 7, 1, 'rgba(0,0,0,0.25)'); ell(g, 8, 8, 8, 7, PAL.outline); ell(g, 8, 8, 7, 6, '#9a8a78'); ell(g, 7, 7, 5, 4, '#b4a490'); rect(g, 7, 2, 1, 4, '#2a1a10'); rect(g, 8, 5, 1, 4, '#2a1a10'); rect(g, 5, 9, 3, 1, '#2a1a10'); rect(g, 9, 9, 1, 4, '#2a1a10'); rect(g, 3, 6, 4, 1, '#2a1a10'); });
 redef('SIGNT', (g) => { ell(g, 8, 15, 5, 1, 'rgba(0,0,0,0.25)'); rect(g, 7, 9, 2, 6, '#5a3418'); rect(g, 1, 2, 14, 9, PAL.outline); rect(g, 2, 3, 12, 7, '#c88c50'); rect(g, 2, 3, 12, 1, '#e8b070'); rect(g, 4, 5, 8, 1, '#7a4a24'); rect(g, 4, 7, 6, 1, '#7a4a24'); });
 redef('STUMPP', (g, R, th, f) => {
-  ell(g, 8, 13, 7, 2, 'rgba(0,0,0,0.25)'); ell(g, 8, 10, 7, 5, PAL.outline); rect(g, 2, 9, 12, 4, '#7a4a22'); ell(g, 8, 8, 6, 3, '#b07840'); ell(g, 8, 8, 4, 2, '#d8a060'); ell(g, 8, 8, 2, 1, '#b07840');
-  const c = ['#7af07a', '#b0ffb0', '#e0ffe0'][f]; rect(g, 7, 3 - f, 2, 2, c); rect(g, 3, 6, 1, 1, c); rect(g, 12, 6, 1, 1, c); rect(g, 6, 12, 1, 1, c); rect(g, 10, 12, 1, 1, c);
+  ell(g, 8, 11, 7, 4, '#1e5a22'); ell(g, 8, 11, 6, 3, '#4caa3a'); rect(g, 3, 11, 10, 1, '#2e7a26'); ell(g, 6, 10, 2, 1, '#7ad05a');
+  ell(g, 8, 7, 4, 4, '#2a6ab8'); ell(g, 8, 7, 3, 3, ['#8ad0ff', '#a8e0ff', '#c8f0ff'][f]); rect(g, 6, 5, 2, 2, '#ffffff'); px1(g, 10, 9, '#ffffff');
+  const c = '#e0fff0'; if (f === 1) { px1(g, 2, 3, c); px1(g, 13, 4, c); } if (f === 2) { px1(g, 3, 6, c); px1(g, 12, 2, c); }
 });
 // 树：地面层只画阴影，树冠在排序层绘制
 redef('TREE', (g) => { ell(g, 8, 14, 8, 2, 'rgba(0,0,0,0.22)'); }, { over: 'tree' });
@@ -155,7 +156,7 @@ const ART = {
     if (k === 'path' || k === 'sand' || k === 'stone') {
       let mask = 0;
       for (let s = 0; s < 4; s++) { const [dx, dy] = [[0, -1], [1, 0], [0, 1], [-1, 0]][s]; if (groundKind(m, x + dx, y + dy) === 'grass') mask |= 1 << s; }
-      if (mask) { const v = (x * 7 + y * 3) & 3; ctx.drawImage(makeOverlay('gf' + mask + v, g => { for (let s = 0; s < 4; s++) if (mask & (1 << s)) grassFringe(g, s, v); }), px, py); }
+      if (mask && !ART.noFringe) { const v = (x * 7 + y * 3) & 3; ctx.drawImage(makeOverlay('gf' + mask + v, g => { for (let s = 0; s < 4; s++) if (mask & (1 << s)) grassFringe(g, s, v); }), px, py); }
     } else if (k === 'water') {
       let mask = 0;
       for (let s = 0; s < 4; s++) { const [dx, dy] = [[0, -1], [1, 0], [0, 1], [-1, 0]][s]; const nk = groundKind(m, x + dx, y + dy); if (nk !== 'water' && nk !== 'out' && nk !== 'other' && !TILES[tAt(m, x + dx, y + dy)].name.includes('BRIDGE')) mask |= 1 << s; }
@@ -163,7 +164,7 @@ const ART = {
     } else if (k === 'cliff') {
       const up = groundKind(m, x, y - 1), down = groundKind(m, x, y + 1), l = groundKind(m, x - 1, y), r = groundKind(m, x + 1, y);
       if (up !== 'cliff' && up !== 'out') {
-        const top = up === 'grass' ? PAL.grass : up === 'path' ? PAL.path : '#d4aa78';
+        const top = ART.lip || (up === 'grass' ? PAL.grass : up === 'path' ? PAL.path : '#d4aa78');
         ctx.fillStyle = top; ctx.fillRect(px, py, 16, 4);
         ctx.fillStyle = PAL.cliffDD; ctx.fillRect(px, py + 4, 16, 1);
         ctx.fillStyle = PAL.cliffL; ctx.fillRect(px, py + 5, 16, 1);

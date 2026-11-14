@@ -1,80 +1,82 @@
 'use strict';
-// ============ NPC ============
+// =====================================================================
+//  剧情：豆丁村的小豆，去大人的房子里夺回星星糖
+// =====================================================================
+const FIREFLY = { tpl: 'bug', a: '#f8e060', d: '#806020' };
 const NPCS = {
-  granny: { name: '奶奶', map: 'home', x: 3, y: 5, wander: 1, look: { hair: '#d8d8d8', shirt: '#8a5a8a', pants: '#5a4a3a' },
+  granny: { name: '奶奶', map: 'home', x: 3, y: 5, wander: 1, look: { hair: '#e0e0e0', shirt: '#9a6aa0', pants: '#5a4a3a' },
     talk: async d => {
-      if (!S.flags.gotLeaf) return say(d.name, ['长老在村子广场的守护古树下等你呢，快去吧！', '出门以后往右走就是广场。'], d.look);
-      if (S.hp < S.maxhp) { S.hp = S.maxhp; Sfx.play('heal'); return say(d.name, ['哎呀，又受伤了？过来，奶奶给你包扎一下。', '（生命全部恢复了！）'], d.look); }
-      return say(d.name, [pick(['累了就回家歇歇，奶奶随时帮你治伤。', '床边的罐子里好像有零钱，拿去用吧，呵呵。', '你爷爷年轻的时候，也是个了不起的冒险家呢。'])], d.look);
+      if (!S.flags.gotLeaf) return say(d.name, ['小豆，村长在灯笼草那儿等你呢。', '出门往右走，就是村子中间的广场。'], d.look);
+      if (S.hp < S.maxhp) { S.hp = S.maxhp; Sfx.play('heal'); return say(d.name, ['哎哟，又被虫子咬了？来，奶奶给你抹点花粉膏。', '（生命全部恢复了！）'], d.look); }
+      return say(d.name, [pick(['累了就回家，奶奶随时帮你治伤。', '大人们的房子很大很大，千万别被他们发现哦。', '罐子里有几颗纽扣，拿去用吧。'])], d.look);
     } },
-  elder: { name: '长老', map: 'village', x: 21, y: 10, wander: 1, look: { hair: '#f0f0f0', shirt: '#4a6ab0', pants: '#4a3a2a', beard: '#f4f4f4' },
+  elder: { name: '村长', map: 'village', x: 21, y: 10, wander: 1, look: { hair: '#f0f0f0', shirt: '#5a8a4a', pants: '#4a3a2a', beard: '#f4f4f4' },
     talk: async d => {
       if (!S.flags.gotLeaf) return introScene(d);
-      if (!S.flags.gotSword) return say(d.name, ['先去道场找剑师吧，就在广场的东南边。'], d.look);
+      if (!S.flags.gotSword) return say(d.name, ['先去缝针道场找针婆婆吧，就在广场的东南边。'], d.look);
       return say(d.name, [hintFor()], d.look);
     } },
-  master: { name: '剑师', map: 'dojo', x: 6, y: 3, wander: 0, look: { hair: '#2a2a32', shirt: '#c83a3a', pants: '#2a2a32', beard: '#2a2a32' },
+  master: { name: '针婆婆', map: 'dojo', x: 6, y: 3, wander: 0, look: { hair: '#c8c8d0', shirt: '#c83a5a', pants: '#2a2a32' },
     talk: async d => {
-      if (!S.flags.gotLeaf) return say(d.name, ['今天是古树节，你不去广场看看吗？'], d.look);
+      if (!S.flags.gotLeaf) return say(d.name, ['今晚是灯笼节，你不去广场看看吗？'], d.look);
       if (!S.flags.gotSword) {
-        await say(d.name, ['长老都跟我说了。', '你要去对付暗影巫师？哈哈，好胆量！', '这把剑交给你了。'], d.look);
+        await say(d.name, ['村长都跟我说了。你要去大人的房子里找星星糖？', '好孩子，有胆量！这根缝衣针是我年轻时从大人的针线盒里拖回来的。', '现在它是你的剑了。'], d.look);
         S.flags.gotSword = true;
-        await bigMessage('得到了 勇气之剑！', '按 J 挥剑。', 'sword');
-        await say(d.name, ['再教你一招：按住 J 不放，等剑发光以后松开——', '这就是【回旋斩】！可以一口气砍倒周围所有的敌人。', '去北边的迷雾森林吧，第一座神殿就在那里。'], d.look);
+        await bigMessage('得到了 缝衣针！', '按 J 刺出去。', 'sword');
+        await say(d.name, ['再教你一招：按住 J 不放，等针尖发光了再松开——', '这就是【回旋斩】！被虫子围住的时候特别管用。', '还有，Shift 键可以翻滚，躲开攻击。', '先去北边的后院花园吧。大花盆里好像有老鼠的手下。'], d.look);
         return;
       }
-      return say(d.name, [pick(['按住 J 蓄力，松开放出回旋斩。被包围时特别好用！', '草丛和罐子里常常藏着宝石和心。', '敌人被回旋镖打中会晕一会儿，趁机砍它！', '有些头目身上有坚硬的护甲，得先用道具打破才行。'])], d.look);
+      return say(d.name, [pick(['按住 J 蓄力，松开放出回旋斩。', '草丛和罐子里常常能找到纽扣和心。', '虫子被瓶盖砸中会晕一会儿，趁机刺它！', '有些头目穿着硬壳盔甲，得先想办法打破才行。'])], d.look);
     } },
-  shopkeeper: { name: '店主', map: 'shop', x: 4, y: 2, wander: 0, look: { hair: '#e8a040', shirt: '#4a9a6a', pants: '#5a4a3a' },
-    talk: async d => { await say(d.name, ['欢迎光临！想买点什么？'], d.look); await openShop(); } },
-  wife: { name: '长老的妻子', map: 'elderhouse', x: 4, y: 5, wander: 1, look: { hair: '#c8c8c8', shirt: '#e0a0b0', pants: '#5a4a6a' },
-    talk: async d => say(d.name, ['老头子说的话我都听见了。', hintFor()], d.look) },
-  hu: { name: '小虎', map: 'village', x: 23, y: 12, wander: 3, look: { hair: '#2a2a2a', shirt: '#e8a030', pants: '#3a5a8a' },
-    talk: async d => say(d.name, [pick(['你知道吗？古树根下有个超级小的洞！要是能变成虫子那么小就好了……', '我听说世界上一共有 8 片心之碎片！集齐 4 片就能多一颗心。', '草丛里能砍出宝石！我天天在砍，嘿嘿。'])], d.look) },
-  mei: { name: '小美', map: 'village', x: 16, y: 21, wander: 3, look: { hair: '#e070a0', shirt: '#f0f0f0', pants: '#a0c8f0' },
-    talk: async d => say(d.name, [pick(['商店里卖红药水，倒下的时候会自动帮你恢复哦！', '我在村子周围看到过好几个会发光的树桩……', '道场的剑师可厉害了，他一剑能砍倒十根竹子！'])], d.look) },
-  fisher: { name: '渔夫', map: 'lake', x: 5, y: 9, wander: 1, look: { hair: '#3a3a3a', shirt: '#3a7ab0', pants: '#5a4a3a', hat: '#e8d090' },
+  shopkeeper: { name: '瓢瓢老板', map: 'shop', x: 4, y: 2, wander: 0, look: { hair: '#2a2a2a', shirt: '#e84040', pants: '#2a2a2a' },
+    talk: async d => { await say(d.name, ['欢迎光临瓶盖杂货铺！今天想要点什么？'], d.look); await openShop(); } },
+  wife: { name: '村长夫人', map: 'elderhouse', x: 4, y: 5, wander: 1, look: { hair: '#d8d8d8', shirt: '#e0a0b0', pants: '#5a4a6a' },
+    talk: async d => say(d.name, ['老头子说的我都听见了。', hintFor()], d.look) },
+  hu: { name: '小芽', map: 'village', x: 23, y: 12, wander: 3, look: { hair: '#4a8a3a', shirt: '#e8a030', pants: '#3a5a8a' },
+    talk: async d => say(d.name, [pick(['灯笼草根下有个特别小的洞！喝了露珠就能钻进去！', '听说一共有 8 片心之碎片，集齐 4 片就能多一颗心。', '我在大人的门廊上见过一只橘猫，有我们一千个那么大！'])], d.look) },
+  mei: { name: '小铃', map: 'village', x: 16, y: 21, wander: 3, look: { hair: '#e070a0', shirt: '#f0f0f0', pants: '#a0c8f0' },
+    talk: async d => say(d.name, [pick(['杂货铺有卖蜂蜜滴，倒下的时候会自动帮你回血哦！', '到处都有发光的露珠，喝一口就会变得和蚂蚁一样小。', '针婆婆可厉害了，她一针能挑起一颗豌豆！'])], d.look) },
+  fisher: { name: '水黾大叔', map: 'lake', x: 5, y: 9, wander: 1, look: { hair: '#3a3a3a', shirt: '#3a7ab0', pants: '#5a4a3a', hat: '#e8d090' },
     talk: async d => {
-      if (!S.flags.lakeBridge) return say(d.name, ['看到湖心岛边上那个蓝色的水晶了吗？', '以前只要打中它，桥就会从湖里升起来。', S.items.boomerang ? '你手里那个会飞回来的东西……站在岸边对准水晶扔过去试试？' : '可惜太远了，剑是够不着的……'], d.look);
-      return say(d.name, ['桥升起来了！你真厉害。岛上的神殿要小心啊。'], d.look);
+      if (!S.flags.lakeBridge) return say(d.name, ['看到地漏边上那颗蓝色按钮了吗？', '一按它，大人用剩的冰棍棒就会搭成桥。', S.items.boomerang ? '你那个会飞回来的瓶盖……站在这边对准按钮扔过去试试？' : '可惜太远了，针是够不着的……'], d.look);
+      return say(d.name, ['桥搭好了！地漏里黑乎乎的，可要小心啊。'], d.look);
     } },
-  traveler: { name: '旅人', map: 'field', x: 24, y: 9, wander: 1, look: { hair: '#8a5a2a', shirt: '#6a7a4a', pants: '#4a4a3a', hat: '#8a6a3a' },
-    talk: async d => say(d.name, [pick(['南边的大裂谷有两格宽，普通人可跳不过去。', '我在草原西北的树洞旁边，看到过一个发光的树桩。', '每个地方都有藏起来的小人世界，里面有宝贝！'])], d.look) },
-  miner: { name: '矿工', map: 'mountain', x: 21, y: 13, wander: 1, look: { hair: '#4a3a2a', shirt: '#c08030', pants: '#3a3a3a', hat: '#e0c040' },
-    talk: async d => say(d.name, [S.items.bombs ? '你有炸弹？那块有裂缝的巨石，一炸就开！' : '山洞口被有裂缝的巨石堵住了。要是有炸弹就好了……'], d.look) },
-  scholar: { name: '学者', map: 'ruins', x: 22, y: 12, wander: 1, look: { hair: '#6a6a7a', shirt: '#3a3a6a', pants: '#2a2a3a' },
-    talk: async d => say(d.name, [pick(['暗影之塔里到处都是机关之眼，据说要用弓箭射开。', '遗迹西边的石墙上也有一只眼睛……后面好像藏着什么。', '暗影巫师用黑暗的护盾保护自己，只有箭能射穿它。'])], d.look) },
+  traveler: { name: '蜗牛邮差', map: 'field', x: 24, y: 9, wander: 0, look: { hair: '#8a5a2a', shirt: '#6a7a4a', pants: '#4a4a3a', hat: '#8a6a3a' },
+    talk: async d => say(d.name, [pick(['南边那条木板缝有两格宽，得有弹簧才跳得过去。', '嘘——那只大橘猫在睡觉，别吵醒它。', '每个地方都藏着蚂蚁大小的小世界，里面有宝贝！'])], d.look) },
+  miner: { name: '蚂蚁工头', map: 'mountain', x: 21, y: 13, wander: 1, look: { hair: '#4a3a2a', shirt: '#c04030', pants: '#3a3a3a', hat: '#e0c040' },
+    talk: async d => say(d.name, [S.items.bombs ? '你有爆米花炸弹？那块卡住柜门的大饼干，一炸就开！' : '碗柜的门缝被一块大饼干卡住了，我们搬了三天都搬不动……'], d.look) },
+  scholar: { name: '书虫先生', map: 'ruins', x: 22, y: 12, wander: 1, look: { hair: '#6a6a7a', shirt: '#3a3a6a', pants: '#2a2a3a' },
+    talk: async d => say(d.name, [pick(['罐头城堡里到处都画着眼睛机关，得用弹弓打中才能开门。', '西边那堆书上也画着一只眼睛……后面好像藏着东西。', '老鼠大王穿着罐头盔甲，只有弹弓打得穿。'])], d.look) },
 };
 for (const k in NPCS) NPCS[k].id = k;
 function npcsForMap(id) { const out = []; for (const k in NPCS) { const d = NPCS[k]; if (d.map === id) out.push(new NPC(d, d.x * TS, d.y * TS - 4)); } return out; }
 
-// ============ 剧情 ============
 async function introScene(d) {
-  await say(d.name, ['你来啦！……你看，守护古树的叶子全都枯黄了。', '昨天夜里，暗影巫师偷走了古树的四颗【光之果实】，把它们藏进了四座神殿。', '没有光之果实，古树撑不了多久了……'], d.look);
+  await say(d.name, ['小豆，你来啦。……你看，灯笼草一点光都没有了。', '昨天夜里，老鼠大王带着手下闯进村子，把照亮全村的四颗【星星糖】全抢走了！', '它们跑进了大人的房子，把星星糖藏在了房子的各个角落……'], d.look);
   Sfx.play('secret'); G.flash = 0.6; await wait(0.1); G.flash = 0;
-  Particles.add(G.player.cx(), G.player.cy() - 20, 30, '#a0ffa0', 60, 1);
-  await say('？？？', ['……喂！喂！这里，这里！'], LEAF_LOOK);
-  await say('小叶', ['呼……终于找到一个能看见我的人了！我是古树的精灵，叫我小叶就好。', '暗影巫师太强了，大人们都打不过他。但是……也许一个小小的勇者可以！', '我把古树的魔力借给你：站在【发光的树桩】上按 J，你就能变得和我一样小！', '变小以后，可以钻进谁都注意不到的小洞，去别人去不了的地方。', '我会一直待在你的帽子上。我们一起把光之果实找回来吧！'], LEAF_LOOK);
+  Particles.add(G.player.cx(), G.player.cy() - 20, 30, '#fff080', 60, 1);
+  await say('？？？', ['喂——！这里这里！往上看！'], FIREFLY);
+  await say('萤萤', ['我是萤火虫萤萤！以前每天晚上帮星星糖照路的。', '没有星星糖，我的屁股都快不亮了……我要和你一起去！', '告诉你一个秘密：到处都有【发光的露珠】。站在露珠上按 J 喝一口，你就会变得和蚂蚁一样小！', '变小以后能钻进墙缝、钥匙孔、刺丛底下——大人们永远注意不到的地方。'], FIREFLY);
   S.flags.gotLeaf = true;
-  await bigMessage('得到了 小叶的祝福！', '站在发光的树桩上按 J，可以变小 / 变大。', 'fruit');
-  await say(d.name, ['孩子，这件事就拜托你了。', '先去道场找剑师，他会给你一把剑。道场就在广场的东南边。'], d.look);
+  await bigMessage('萤萤成为了你的伙伴！', '站在发光的露珠上按 J，就能变小 / 变回来。', 'fruit');
+  await say(d.name, ['好孩子，这件事就拜托你了。', '先去缝针道场找针婆婆，她会给你一件趁手的武器。道场就在广场东南边。'], d.look);
 }
 function hintFor() {
-  if (!S.flags.d1) return '第一颗光之果实在北边迷雾森林的神殿里。神殿被荆棘围着……听说荆棘下面有个小洞。';
-  if (!S.flags.d2) return '第二座神殿在镜湖的湖心岛上。镜湖在青草原的东边。';
-  if (!S.flags.d3) return '第三座神殿在岩石山道的山洞里，从青草原往北走就到了。';
-  if (!S.flags.d4) return '最后的暗影之塔在古代遗迹，要跳过青草原南边的大裂谷才能去。';
-  return '古树又活过来了！真是谢谢你。';
+  if (!S.flags.d1) return '第一颗星星糖被藏在北边后院花园的大花盆里。花盆被玫瑰刺丛围着……听说刺丛底下有个小洞。';
+  if (!S.flags.d2) return '第二颗在大人的浴室里，就在地漏深处。从木头门廊往东走就到了。';
+  if (!S.flags.d3) return '第三颗在厨房的碗柜里，从门廊往北走。柜门被一块大饼干卡住了。';
+  if (!S.flags.d4) return '最后一颗在地下室的罐头城堡，老鼠大王就在那里！要跳过门廊南边的木板缝才能去。';
+  return '灯笼草又亮起来了！真是谢谢你，小豆。';
 }
 function goalText() {
-  if (!S.flags.gotLeaf) return '出门往右，去村子广场的守护古树下找长老。';
-  if (!S.flags.gotSword) return '去村子东南边的剑术道场，找剑师拿剑。';
-  if (!S.flags.d1) return '去村子北边的迷雾森林，进入森林神殿。（荆棘下有小洞：先在发光树桩上变小！）';
-  if (!S.flags.d2) return '去青草原东边的镜湖，用回旋镖打中湖心岛上的水晶开关，进入湖底神殿。';
-  if (!S.flags.d3) return '去青草原北边的岩石山道，用炸弹炸开洞口的巨石，进入山之洞窟。';
-  if (!S.flags.d4) return '用跳跃羽毛跳过青草原南边的大裂谷，前往古代遗迹的暗影之塔，打倒暗影巫师！';
+  if (!S.flags.gotLeaf) return '出门往右，去村子中间的灯笼草下找村长。';
+  if (!S.flags.gotSword) return '去村子东南边的缝针道场，找针婆婆。';
+  if (!S.flags.d1) return '去北边的后院花园，进入大花盆。（刺丛底下有小洞：先在露珠上变小！）';
+  if (!S.flags.d2) return '去门廊东边的浴室，用瓶盖砸中地漏边的蓝色按钮，进入地漏深处。';
+  if (!S.flags.d3) return '去门廊北边的厨房，用爆米花炸弹炸开卡住柜门的饼干，进入碗柜迷宫。';
+  if (!S.flags.d4) return '用弹簧鞋跳过门廊南边的木板缝，去地下室的罐头城堡，打倒老鼠大王！';
   const left = 8 - (S.flags.piecesFound || 0);
-  return left > 0 ? `古树复活了！世界上还藏着 ${left} 片心之碎片，去找找看吧。` : '你找齐了所有的心之碎片！真正的勇者！';
+  return left > 0 ? `灯笼草亮起来了！还有 ${left} 片心之碎片藏在各个角落，去找找看吧。` : '你找齐了所有心之碎片！真正的豆丁勇者！';
 }
 
 // ============ 交互 ============
@@ -108,7 +110,7 @@ function talkTo(npc) {
 function tryUnlock(tx, ty, t) {
   const d = dngState(G.map.dng);
   if (t.lock === 'key') { if (d.keys > 0) { d.keys--; openDoorAt(tx, ty); } else toast('门锁着。需要一把小钥匙。'); }
-  else if (t.lock === 'boss') { if (d.bossKey) openDoorAt(tx, ty); else toast('一扇巨大的门。需要头目钥匙。'); }
+  else if (t.lock === 'boss') { if (d.bossKey) openDoorAt(tx, ty); else toast('一扇大门。需要大钥匙。'); }
 }
 
 // ============ 宝箱与奖励 ============
@@ -125,31 +127,30 @@ async function gainPiece() {
   if (S.pieces >= 4) { S.pieces = 0; S.maxhp += 2; S.hp = S.maxhp; await bigMessage('生命上限 +1！', '心之碎片合成了一颗完整的心。', 'heartc'); }
 }
 const ITEM_GET = {
-  boomerang: '按 K 扔出去，它会飞回来。\n能打晕敌人、打中远处的水晶开关！',
-  bombs: '按 K 放下炸弹。能炸开有裂缝的墙和岩石！\n（Q / E 切换道具）',
-  feather: '按 K 跳起来！可以跳过两格宽的深坑。',
-  bow: '按 K 射箭。射中机关之眼可以开门！',
+  boomerang: '按 K 扔出去，它会转一圈飞回来。\n能砸晕虫子、按到远处的按钮！',
+  bombs: '按 K 放下，过一会儿"嘭"地炸开。\n能炸开饼干墙和有裂缝的东西！（Q / E 切换道具）',
+  feather: '按 K 弹起来！可以跳过两格宽的缝。',
+  bow: '按 K 发射豆子。打中画着的眼睛机关就能开门！',
 };
 function openChestReward(spec) {
   runScript(async () => {
     Sfx.play('secret'); await wait(0.25);
     const it = spec.item;
     if (it === 'key') { dngState(G.map.dng).keys++; return bigMessage('得到了 小钥匙！', '可以打开一扇锁住的门。', 'key'); }
-    if (it === 'bosskey') { dngState(G.map.dng).bossKey = true; return bigMessage('得到了 头目钥匙！', '可以打开头目房间的大门。', 'bosskey'); }
+    if (it === 'bosskey') { dngState(G.map.dng).bossKey = true; return bigMessage('得到了 大钥匙！', '可以打开头目房间的大门。', 'bosskey'); }
     if (ITEM_GET[it]) {
       giveItem(it); S.equip = it;
       if (it === 'bombs') S.bombs = 10; if (it === 'bow') S.arrows = 30;
       await bigMessage('得到了 ' + ITEMS[it].name + '！', ITEM_GET[it], it);
-      return say('小叶', [it === 'boomerang' ? '太好了！刚才那扇蓝色的栅栏门，房间里应该有个水晶开关……用回旋镖打它试试！' : '新道具已经装备在 K 键上了。按 Q / E 可以切换哦。'], LEAF_LOOK);
+      return say('萤萤', [it === 'boomerang' ? '太好了！刚才那扇蓝色栅栏门……房间里应该有个按钮，用瓶盖砸它试试！' : '新道具已经装在 K 键上了。按 Q / E 可以切换哦。'], FIREFLY);
     }
     if (it === 'heartp') return gainPiece();
-    if (it === 'wallet') { S.wallet = S.wallet < 300 ? 300 : 999; return bigMessage('得到了 大钱包！', `现在最多可以装 ${S.wallet} 颗宝石。`, 'wallet'); }
-    if (it === 'rupee20') { addRupees(20); return bigMessage('得到了 红宝石！', '价值 20 颗绿宝石。', 'rupee20'); }
-    // 普通宝箱
+    if (it === 'wallet') { S.wallet = S.wallet < 300 ? 300 : 999; return bigMessage('得到了 大火柴盒！', `现在最多可以装 ${S.wallet} 颗纽扣。`, 'wallet'); }
+    if (it === 'rupee20') { addRupees(20); return bigMessage('得到了 红纽扣！', '值 20 颗绿纽扣。', 'rupee20'); }
     const r = Math.random();
-    if (r < 0.3 && S.items.bombs) { S.bombs = Math.min(S.maxBombs, S.bombs + 5); return bigMessage('得到了 炸弹 ×5！', null, 'bombs'); }
-    if (r < 0.55 && S.items.bow) { S.arrows = Math.min(S.maxArrows, S.arrows + 10); return bigMessage('得到了 箭 ×10！', null, 'arrow'); }
-    addRupees(20); return bigMessage('得到了 红宝石！', '价值 20 颗绿宝石。', 'rupee20');
+    if (r < 0.3 && S.items.bombs) { S.bombs = Math.min(S.maxBombs, S.bombs + 5); return bigMessage('得到了 爆米花 ×5！', null, 'bombs'); }
+    if (r < 0.55 && S.items.bow) { S.arrows = Math.min(S.maxArrows, S.arrows + 10); return bigMessage('得到了 豆子 ×10！', null, 'arrow'); }
+    addRupees(20); return bigMessage('得到了 红纽扣！', '值 20 颗绿纽扣。', 'rupee20');
   });
 }
 
@@ -165,10 +166,10 @@ function bossDefeated(b) {
     await wait(0.5);
     S.maxhp += 2; S.hp = S.maxhp;
     await bigMessage('得到了 心之容器！', '生命上限 +1', 'heartc');
-    await bigMessage(`找回了 光之果实！（${S.fruits} / 4）`, '果实里散发着温暖的光芒。', 'fruit');
+    await bigMessage(`找回了 星星糖！（${S.fruits} / 4）`, '亮晶晶的，还有一点甜甜的味道。', 'fruit');
     if (id === 'd4') return endingScene();
-    const next = { d1: '还剩三颗！下一颗在青草原东边的镜湖。湖心岛上的水晶开关……用回旋镖试试！', d2: '还剩两颗！有了炸弹，就能炸开岩石山道的巨石了。山道在青草原的北边。', d3: '只剩最后一颗了！用跳跃羽毛跳过青草原南边的大裂谷，暗影巫师就在古代遗迹里！' }[id];
-    await say('小叶', ['做得好！古树的力量又恢复了一点。', next], LEAF_LOOK);
+    const next = { d1: '还剩三颗！下一颗在浴室的地漏里。地漏边上有颗蓝色按钮……用瓶盖砸它！', d2: '还剩两颗！有了爆米花炸弹，就能炸开卡在厨房碗柜门缝里的饼干了。', d3: '只剩最后一颗了！穿上弹簧鞋跳过门廊南边的木板缝，老鼠大王就在地下室！' }[id];
+    await say('萤萤', ['好厉害！我的屁股又亮了一点！', next], FIREFLY);
     await fadeOut(0.6);
     S.tiny = false;
     loadMap(D.from.map, D.from.x * TS, D.from.y * TS - 4, 0);
@@ -177,14 +178,46 @@ function bossDefeated(b) {
 }
 async function endingScene() {
   const w = BOSS_KINDS.wizard;
-  await say(w.name, ['「不可能……被一个小不点打败了……」', '「古树的光……好刺眼……」'], w.look);
-  await say('小叶', ['我们做到了！四颗光之果实都找回来了！', '快回村子吧，古树在等着我们！'], LEAF_LOOK);
+  await say(w.name, ['「吱吱！不可能……被一颗豆子那么大的小不点打败了……」', '「我、我只是想让我的地下室也亮堂一点嘛……」'], w.look);
+  await say('萤萤', ['原来是这样……那以后，我们分一点灯光给你们好不好？', '小豆，我们回家吧！'], FIREFLY);
   await fadeOut(1);
   S.flags.ending = true; S.tiny = false;
   loadMap('village', 18 * TS, 9 * TS - 4, 1);
   await new Promise(res => UI.push(new CreditsUI(res)));
   await fadeIn(1);
-  await say(NPCS.elder.name, ['古树……重新长出新叶了！谢谢你，小小的勇者！'], NPCS.elder.look);
-  await say('小叶', ['冒险告一段落啦。不过世界上还有没找到的心之碎片哦！', '我会一直陪着你的。'], LEAF_LOOK);
+  await say(NPCS.elder.name, ['灯笼草……又亮起来了！谢谢你，小豆！'], NPCS.elder.look);
+  await say('萤萤', ['冒险告一段落啦。不过房子里还藏着没找到的心之碎片哦！', '我会一直陪着你的。'], FIREFLY);
   saveGame(true);
+}
+
+// ============ 门廊上的大橘猫 ============
+class BigCat extends Ent {
+  constructor(x, y) { super(x * TS, y * TS); this.solid = true; this.interact = true; this.hb = { x: 2, y: 10, w: 76, h: 30 }; }
+  onInteract() { runScript(async () => { await say(null, ['呼……噜……呼……噜……', '（一只像山一样大的橘猫在晒太阳睡觉。胡子随着呼吸一抖一抖的。）']); await say('萤萤', ['嘘——千万别吵醒它！被它看见我们就完蛋了！'], FIREFLY); }); return true; }
+  draw(ctx, cx, cy) {
+    const x = Math.round(this.x - cx), y = Math.round(this.y - cy), br = Math.sin(G.t * 1.6) * 1.5, O = PAL.outline;
+    ctx.fillStyle = 'rgba(0,0,0,0.25)'; ctx.beginPath(); ctx.ellipse(x + 40, y + 42, 42, 8, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = O; ctx.beginPath(); ctx.ellipse(x + 44, y + 28 - br / 2, 36 + br, 16 + br, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = '#f0a040'; ctx.beginPath(); ctx.ellipse(x + 44, y + 28 - br / 2, 34 + br, 14 + br, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = '#c87020'; for (let i = 0; i < 5; i++) ctx.fillRect(x + 26 + i * 9, y + 15 - br / 2, 4, 10);
+    ctx.fillStyle = '#ffe0b0'; ctx.beginPath(); ctx.ellipse(x + 44, y + 36, 24, 5, 0, 0, 7); ctx.fill();
+    // 尾巴
+    ctx.strokeStyle = O; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(x + 76, y + 30); ctx.quadraticCurveTo(x + 90, y + 40 + Math.sin(G.t) * 3, x + 74, y + 44); ctx.stroke();
+    ctx.strokeStyle = '#f0a040'; ctx.lineWidth = 5; ctx.stroke(); ctx.lineWidth = 1;
+    // 头
+    ctx.fillStyle = O; ctx.beginPath(); ctx.ellipse(x + 14, y + 28, 15, 13, 0, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(x + 2, y + 22); ctx.lineTo(x + 4, y + 8); ctx.lineTo(x + 13, y + 17); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(x + 16, y + 17); ctx.lineTo(x + 24, y + 8); ctx.lineTo(x + 27, y + 22); ctx.fill();
+    ctx.fillStyle = '#f0a040'; ctx.beginPath(); ctx.ellipse(x + 14, y + 28, 13, 11, 0, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(x + 4, y + 22); ctx.lineTo(x + 5, y + 11); ctx.lineTo(x + 12, y + 18); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(x + 17, y + 18); ctx.lineTo(x + 23, y + 11); ctx.lineTo(x + 25, y + 22); ctx.fill();
+    ctx.fillStyle = '#ffd0c0'; ctx.fillRect(x + 6, y + 15, 2, 4); ctx.fillRect(x + 21, y + 15, 2, 4);
+    ctx.fillStyle = O; ctx.fillRect(x + 6, y + 26, 5, 1); ctx.fillRect(x + 17, y + 26, 5, 1);
+    ctx.fillStyle = '#e07080'; ctx.fillRect(x + 13, y + 30, 2, 2);
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(x - 4, y + 31, 9, 1); ctx.fillRect(x + 24, y + 31, 9, 1);
+    // 打呼噜的 Z
+    const zt = (G.t * 0.7) % 1;
+    ctx.globalAlpha = 1 - zt; drawText(ctx, 'Z', x + 24 + zt * 10, y + 4 - zt * 14, '#ffffff', 8 + zt * 4, 'center', '#000', true); ctx.globalAlpha = 1;
+  }
+  sortY() { return this.y + 40; }
 }

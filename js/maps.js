@@ -11,7 +11,7 @@ defTile('TDOOR', { draw(g) { fill(g, '#5a5a70'); rect(g, 1, 1, 14, 15, '#0a0610'
 defTile('RUIN', { solid: true, draw(g, R) { fill(g, '#8a9a7a'); for (let y = 0; y < 16; y += 4) { rect(g, 0, y, 16, 1, '#5a6a4a'); const o = (y / 4 % 2) * 4; for (let x = o; x < 16; x += 8) rect(g, x, y, 1, 4, '#5a6a4a'); } speck(g, R, 4, '#4a8a3a', 2, 1); } });
 // 缩小石桩：站在上面按 J 变小 / 变大
 defTile('STUMPP', { shrink: true, base: 'grass', anim: 3, draw(g, R, th, f) { ell(g, 8, 10, 7, 5, '#4e301a'); ell(g, 8, 9, 6, 4, '#a0703a'); ell(g, 8, 9, 4, 2, '#c89058'); const c = ['#7af07a', '#b0ffb0', '#d8ffd8'][f]; rect(g, 7, 6, 2, 2, c); rect(g, 6, 7, 1, 1, c); rect(g, 9, 7, 1, 1, c); rect(g, 3, 9, 1, 1, c); rect(g, 12, 9, 1, 1, c); } });
-defTile('DSTUMP', { shrink: true, base: 'dfloor', anim: 3, draw(g, R, th, f) { const c = ['#5ad05a', '#8af08a', '#b8ffb8'][f]; ell(g, 8, 8, 7, 6, '#1a3a1a'); ell(g, 8, 8, 6, 5, '#2a5a2a'); ell(g, 8, 8, 4, 3, c); rect(g, 7, 5, 2, 6, '#e0ffe0'); rect(g, 5, 7, 6, 2, '#e0ffe0'); } });
+defTile('DSTUMP', { shrink: true, base: 'dfloor', anim: 3, draw(g, R, th, f) { ell(g, 8, 12, 6, 3, 'rgba(0,0,0,0.25)'); ell(g, 8, 8, 5, 5, '#2a6ab8'); ell(g, 8, 8, 4, 4, ['#8ad0ff', '#a8e0ff', '#c8f0ff'][f]); rect(g, 6, 5, 2, 2, '#ffffff'); rect(g, 10, 10, 1, 1, '#ffffff'); } });
 defTile('BRAMBLE', { solid: true, draw(g, R) { fill(g, '#24481f'); speck(g, R, 16, '#3a6a2a', 2, 2); speck(g, R, 6, '#163010', 2, 2); speck(g, R, 4, '#d84040'); } });
 defTile('HEDGEHOLE', { solid: true, tinyPass: true, draw(g, R) { fill(g, '#24481f'); speck(g, R, 14, '#3a6a2a', 2, 2); speck(g, R, 4, '#d84040'); ell(g, 8, 13, 3, 3, '#0a1408'); rect(g, 5, 13, 7, 3, '#0a1408'); } });
 defTile('MHOLE', { solid: true, tinyPass: true, draw(g, R) { fill(g, '#6b4524'); for (let x = 1; x < 16; x += 4) rect(g, x, 0, 1, 16, '#4e301a'); speck(g, R, 5, '#8a5a30', 1, 3); ell(g, 8, 13, 3, 3, '#0a0604'); rect(g, 5, 13, 7, 3, '#0a0604'); rect(g, 4, 11, 1, 1, '#7af07a'); rect(g, 11, 11, 1, 1, '#7af07a'); } });
@@ -99,26 +99,26 @@ function decorate(m, R, prot, opts) {
 // ============ 野外 ============
 const MAPDEF = {};
 MAPDEF.village = () => {
-  const m = newMap('village', 36, 26, 'GRASS'); m.name = '星露村'; m.music = 'village';
+  const m = newMap('village', 36, 26, 'GRASS'); m.name = '豆丁村'; m.theme = 'garden'; m.music = 'village';
   const R = mulberry32(11);
   borderT(m, 'TREE', 2, [['n', 12, 15], ['e', 11, 13]]);
   rectT(m, 12, 0, 4, 9, 'PATH'); rectT(m, 2, 11, 34, 2, 'PATH'); rectT(m, 26, 11, 10, 3, 'PATH');
   rectT(m, 10, 13, 2, 9, 'PATH'); rectT(m, 2, 21, 32, 1, 'PATH');
   rectT(m, 16, 8, 10, 6, 'STONE');
   rectT(m, 17, 2, 4, 5, 'TREE'); setT(m, 18, 6, 'MHOLE'); addWarp(m, 18, 6, 'm_root'); setT(m, 18, 8, 'STUMPP');
-  stampBuilding(m, { x: 3, y: 3, w: 6, h: 5, door: 2, roof: 'ROOF_R', to: 'home', label: '我的家' });
-  stampBuilding(m, { x: 25, y: 3, w: 7, h: 5, door: 3, roof: 'ROOF_B', to: 'shop', label: '商店' });
+  stampBuilding(m, { x: 3, y: 3, w: 6, h: 5, door: 2, roof: 'ROOF_R', to: 'home', label: '我的蘑菇屋' });
+  stampBuilding(m, { x: 25, y: 3, w: 7, h: 5, door: 3, roof: 'ROOF_B', to: 'shop', label: '瓶盖杂货铺' });
   stampBuilding(m, { x: 3, y: 15, w: 6, h: 5, door: 2, roof: 'ROOF_G', to: 'elderhouse', label: '长老家' });
-  stampBuilding(m, { x: 24, y: 15, w: 8, h: 5, door: 4, roof: 'ROOF_K', to: 'dojo', label: '剑术道场' });
+  stampBuilding(m, { x: 24, y: 15, w: 8, h: 5, door: 4, roof: 'ROOF_K', to: 'dojo', label: '缝针道场' });
   rectT(m, 5, 8, 1, 3, 'PATH'); rectT(m, 28, 8, 1, 3, 'PATH'); rectT(m, 5, 20, 1, 1, 'PATH'); rectT(m, 28, 20, 1, 1, 'PATH');
-  addSign(m, 11, 9, '↑ 北：迷雾森林\n→ 东：青草原');
-  addSign(m, 21, 7, '【守护古树】\n守护星露村千年的大树。\n树根下好像有个很小很小的洞……');
+  addSign(m, 11, 9, '↑ 北：后院花园\n→ 东：木头门廊（大人房子的后门）');
+  addSign(m, 21, 7, '【灯笼草】\n豆丁村的灯笼草。以前它每晚都被星星糖照得亮堂堂的……\n根部好像有个蚂蚁才钻得进的小洞。');
   decorate(m, R, [[0, 9, 36, 5], [11, 0, 6, 10], [15, 1, 12, 14], [2, 2, 8, 9], [24, 2, 9, 9], [2, 14, 8, 9], [23, 14, 11, 9], [9, 12, 4, 11], [2, 20, 32, 3]]);
   m.exits = { n: { to: 'forest', off: 0 }, e: { to: 'field', off: 0 } };
   return m;
 };
 MAPDEF.forest = () => {
-  const m = newMap('forest', 36, 26, 'GRASS'); m.name = '迷雾森林'; m.music = 'forest';
+  const m = newMap('forest', 36, 26, 'GRASS'); m.name = '后院花园'; m.theme = 'garden'; m.music = 'forest';
   const R = mulberry32(22);
   borderT(m, 'TREE', 2, [['s', 12, 15]]);
   rectT(m, 12, 19, 4, 7, 'PATH'); rectT(m, 13, 10, 2, 10, 'PATH');
@@ -129,30 +129,30 @@ MAPDEF.forest = () => {
   rectT(m, 3, 4, 5, 3, 'TREE'); setT(m, 5, 6, 'MHOLE'); addWarp(m, 5, 6, 'm_forest'); setT(m, 5, 8, 'STUMPP'); rectT(m, 5, 9, 1, 4, 'PATH'); rectT(m, 5, 12, 8, 1, 'PATH');
   rectT(m, 28, 3, 5, 5, 'CHASM'); setT(m, 30, 5, 'GRASS');
   rectT(m, 3, 16, 6, 4, 'TALL'); rectT(m, 25, 13, 7, 5, 'TALL');
-  addSign(m, 16, 12, '森林神殿\n入口被荆棘封住了。\n荆棘下面有个小洞……');
+  addSign(m, 16, 12, '大花盆\n入口被玫瑰刺丛挡住了。\n刺丛底下有个小洞……');
   decorate(m, R, [[11, 0, 15, 13], [2, 3, 7, 10], [4, 11, 10, 3], [26, 2, 8, 7], [11, 18, 6, 8]], { tree: 0.16, tall: 0.05 });
   m.exits = { s: { to: 'village', off: 0 } };
   m.enemies = [['slime', 4], ['octo', 2]];
   return m;
 };
 MAPDEF.field = () => {
-  const m = newMap('field', 40, 26, 'GRASS'); m.name = '青草原'; m.music = 'field';
+  const m = newMap('field', 40, 26, 'GRASS'); m.name = '木头门廊'; m.theme = 'porch'; m.music = 'field';
   const R = mulberry32(33);
   borderT(m, 'TREE', 2, [['w', 11, 13], ['e', 11, 13], ['n', 18, 21], ['s', 18, 21]]);
   rectT(m, 0, 11, 40, 3, 'PATH'); rectT(m, 18, 0, 4, 26, 'PATH');
   rectT(m, 2, 20, 36, 2, 'CHASM');
   rectT(m, 31, 1, 5, 4, 'CLIFF'); setT(m, 33, 2, 'GRASS'); setT(m, 33, 3, 'GRASS'); setT(m, 33, 4, 'CRACK');
   rectT(m, 6, 3, 3, 3, 'TREE'); setT(m, 7, 5, 'MHOLE'); addWarp(m, 7, 5, 'm_field'); setT(m, 7, 7, 'STUMPP');
-  rectT(m, 4, 15, 8, 4, 'TALL'); rectT(m, 27, 15, 8, 4, 'TALL'); rectT(m, 25, 4, 4, 4, 'TALL');
-  addSign(m, 22, 10, '↑ 岩石山道   → 镜湖\n↓ 古代遗迹   ← 星露村');
-  addSign(m, 17, 18, '前方是大裂谷。\n普通人是跳不过去的……');
-  decorate(m, R, [[0, 10, 40, 5], [17, 0, 6, 26], [30, 0, 7, 6], [5, 2, 5, 7], [0, 19, 40, 4]], { tree: 0.04, bush: 0.04 });
+  rectT(m, 4, 15, 8, 4, 'TALL'); rectT(m, 27, 15, 8, 4, 'TALL');
+  addSign(m, 22, 10, '↑ 厨房   → 浴室\n↓ 地下室   ← 豆丁村');
+  addSign(m, 17, 18, '前面是一条宽宽的木板缝。\n掉下去可就惨了……得想办法跳过去。');
+  decorate(m, R, [[0, 10, 40, 5], [17, 0, 6, 26], [30, 0, 7, 6], [5, 2, 5, 7], [0, 19, 40, 4], [23, 2, 8, 7]], { tree: 0.04, bush: 0.04 });
   m.exits = { w: { to: 'village', off: 0 }, e: { to: 'lake', off: 0 }, n: { to: 'mountain', off: 0 }, s: { to: 'ruins', off: 0 } };
-  m.enemies = [['slime2', 3], ['octo', 2], ['bat', 1]];
+  m.enemies = [['slime2', 2], ['ladybug', 2], ['bat', 1]];
   return m;
 };
 MAPDEF.lake = () => {
-  const m = newMap('lake', 36, 26, 'GRASS'); m.name = '镜湖'; m.music = 'field';
+  const m = newMap('lake', 36, 26, 'GRASS'); m.name = '浴室'; m.theme = 'bath'; m.music = 'field';
   const R = mulberry32(44);
   borderT(m, 'TREE', 2, [['w', 11, 13]]);
   rectT(m, 0, 11, 9, 3, 'PATH');
@@ -161,14 +161,14 @@ MAPDEF.lake = () => {
   setT(m, 16, 11, 'CRYSW');
   rectT(m, 3, 18, 3, 3, 'TREE'); setT(m, 4, 20, 'MHOLE'); addWarp(m, 4, 20, 'm_lake'); setT(m, 4, 22, 'STUMPP');
   rectT(m, 2, 3, 5, 5, 'TALL');
-  addSign(m, 7, 9, '湖心岛上有座神殿。\n听说以前有座桥，\n是用岛上的水晶开关升起来的……');
+  addSign(m, 7, 9, '浴缸边的地漏里好像藏着什么。\n对面那颗蓝色按钮，一按就会放下冰棍棒桥……\n可惜太远了。');
   decorate(m, R, [[0, 10, 10, 5], [2, 17, 5, 7], [7, 2, 3, 22]], { tree: 0.05 });
   m.exits = { w: { to: 'field', off: 0 } };
-  m.enemies = [['crab', 3], ['octo', 1]];
+  m.enemies = [['crab', 3], ['slime2', 2]];
   return m;
 };
 MAPDEF.mountain = () => {
-  const m = newMap('mountain', 36, 26, 'ROCKY'); m.name = '岩石山道'; m.music = 'forest'; m.base = 'rocky'; m.theme = 'cave';
+  const m = newMap('mountain', 36, 26, 'ROCKY'); m.name = '厨房'; m.music = 'village'; m.base = 'rocky'; m.theme = 'kitchen';
   const R = mulberry32(55);
   borderT(m, 'CLIFF', 2, [['s', 18, 21]]);
   rectT(m, 18, 7, 4, 19, 'PATH'); rectT(m, 17, 7, 1, 17, 'PATH');
@@ -177,15 +177,15 @@ MAPDEF.mountain = () => {
   rectT(m, 4, 3, 5, 4, 'CLIFF'); setT(m, 6, 6, 'MHOLE'); addWarp(m, 6, 6, 'm_mountain'); setT(m, 6, 8, 'STUMPP');
   rectT(m, 8, 13, 7, 1, 'CLIFF'); rectT(m, 24, 10, 6, 1, 'CLIFF');
   rectT(m, 3, 15, 8, 5, 'TALLD'); rectT(m, 25, 15, 8, 5, 'TALLD');
-  addSign(m, 21, 8, '山之洞窟\n巨石挡住了入口。\n要是有炸弹就好了……');
+  addSign(m, 21, 8, '碗柜\n一块大饼干卡住了柜门缝。\n要是能把它炸开就好了……');
   const prot = [[16, 5, 7, 21], [3, 2, 7, 8], [13, 0, 10, 7]];
   scatterT(m, R, 'BOULDER', 0.03, ['ROCKY'], prot); scatterT(m, R, 'PINE', 0.03, ['ROCKY'], prot); scatterT(m, R, 'TALLD', 0.03, ['ROCKY'], prot);
   m.exits = { s: { to: 'field', off: 0 } };
-  m.enemies = [['firebat', 3], ['skel', 2]];
+  m.enemies = [['fly', 3], ['ant', 2], ['roach', 1]];
   return m;
 };
 MAPDEF.ruins = () => {
-  const m = newMap('ruins', 36, 26, 'GRASS'); m.name = '古代遗迹'; m.music = 'dungeon';
+  const m = newMap('ruins', 36, 26, 'GRASS'); m.name = '地下室'; m.theme = 'basement'; m.music = 'dungeon';
   const R = mulberry32(66);
   borderT(m, 'TREE', 2, [['n', 18, 21]]);
   rectT(m, 18, 0, 4, 10, 'PATH'); rectT(m, 10, 10, 16, 5, 'STONE');
@@ -194,11 +194,11 @@ MAPDEF.ruins = () => {
   rectT(m, 28, 4, 4, 3, 'RUIN'); setT(m, 29, 6, 'MHOLE'); addWarp(m, 29, 6, 'm_ruins'); setT(m, 29, 8, 'STUMPP');
   for (const [x, y] of [[11, 11], [24, 11], [11, 14], [24, 14], [6, 18], [29, 18]]) setT(m, x, y, 'STATUE');
   rectT(m, 26, 12, 7, 4, 'TALL'); rectT(m, 3, 12, 6, 3, 'TALL');
-  addSign(m, 22, 9, '古代遗迹 · 暗影之塔\n暗影巫师就在里面。');
-  addSign(m, 9, 6, '石墙上有一只奇怪的眼睛……');
+  addSign(m, 22, 9, '罐头城堡\n老鼠大王就住在里面！');
+  addSign(m, 9, 6, '书堆上画着一只奇怪的眼睛……');
   decorate(m, R, [[17, 0, 6, 16], [9, 9, 18, 14], [2, 3, 8, 7], [27, 3, 6, 7]], { tree: 0.06 });
   m.exits = { n: { to: 'field', off: 0 } };
-  m.enemies = [['knight', 2], ['wisp', 2]];
+  m.enemies = [['rat', 3], ['dust', 2]];
   return m;
 };
 
@@ -219,11 +219,11 @@ MAPDEF.dojo = () => { const m = makeInterior('dojo', '剑术道场', 12, 9, [['S
 
 // ============ 小人世界 ============
 const MINIS = {
-  m_root: { name: '古树根下的世界', back: { map: 'village', x: 18, y: 7 }, reward: 'heartp', seed: 101, enemies: ['ant', 'ant', 'ladybug'] },
-  m_forest: { name: '空心圆木', back: { map: 'forest', x: 5, y: 7 }, reward: 'heartp', seed: 202, enemies: ['ant', 'ladybug', 'ladybug'] },
-  m_field: { name: '树桩里的世界', back: { map: 'field', x: 7, y: 6 }, reward: 'wallet', seed: 303, enemies: ['ant', 'ant', 'spider'] },
-  m_lake: { name: '芦苇丛', back: { map: 'lake', x: 4, y: 21 }, reward: 'heartp', seed: 404, enemies: ['ladybug', 'spider', 'ant'], water: true },
-  m_mountain: { name: '岩缝深处', back: { map: 'mountain', x: 6, y: 7 }, reward: 'heartp', seed: 505, enemies: ['spider', 'spider', 'ant'], rock: true },
+  m_root: { name: '灯笼草根下', back: { map: 'village', x: 18, y: 7 }, reward: 'heartp', seed: 101, enemies: ['ant', 'ant', 'ladybug'] },
+  m_forest: { name: '蚯蚓洞', back: { map: 'forest', x: 5, y: 7 }, reward: 'heartp', seed: 202, enemies: ['ant', 'ladybug', 'ladybug'] },
+  m_field: { name: '木板夹缝', back: { map: 'field', x: 7, y: 6 }, reward: 'wallet', seed: 303, enemies: ['ant', 'ant', 'spider'] },
+  m_lake: { name: '墙缝里的苔藓', back: { map: 'lake', x: 4, y: 21 }, reward: 'heartp', seed: 404, enemies: ['ladybug', 'spider', 'ant'], water: true },
+  m_mountain: { name: '踢脚线后面', back: { map: 'mountain', x: 6, y: 7 }, reward: 'heartp', seed: 505, enemies: ['spider', 'spider', 'ant'], rock: true },
   m_ruins: { name: '蚂蚁王国', back: { map: 'ruins', x: 29, y: 7 }, reward: 'wallet', seed: 606, enemies: ['ant', 'ant', 'ant', 'spider'] },
 };
 for (const k in MINIS) INTERIOR_BACK[k] = MINIS[k].back;
@@ -261,10 +261,10 @@ function genMini(id) {
 
 // ============ 地下城（程序生成，固定种子） ============
 const DUNGEONS = {
-  d1: { name: '森林神殿', theme: 'forest', seed: 1201, gates: ['lock', 'item', 'tiny', 'lock'], item: 'boomerang', boss: 'beetle', enemies: ['slime', 'bat', 'octo', 'slime'], hazard: 'PIT', from: { map: 'forest', x: 17, y: 5 }, tier: 1 },
-  d2: { name: '湖底神殿', theme: 'tide', seed: 2203, gates: ['lock', 'switch', 'tiny', 'item', 'lock'], item: 'bombs', boss: 'crabking', enemies: ['slime2', 'crab', 'octo', 'bat'], hazard: 'DWATER', from: { map: 'lake', x: 19, y: 10 }, tier: 2 },
-  d3: { name: '山之洞窟', theme: 'lava', seed: 3307, gates: ['lock', 'crack', 'switch', 'item', 'lock'], item: 'feather', boss: 'lavagolem', enemies: ['firebat', 'skel', 'wisp', 'octo2'], hazard: 'LAVA', from: { map: 'mountain', x: 17, y: 7 }, tier: 3 },
-  d4: { name: '暗影之塔', theme: 'shadow', seed: 4409, gates: ['lock', 'pit', 'tiny', 'crack', 'item', 'lock', 'switch'], item: 'bow', boss: 'wizard', enemies: ['knight', 'wisp2', 'skel3', 'bat3'], hazard: 'PIT', from: { map: 'ruins', x: 17, y: 14 }, tier: 4 },
+  d1: { name: '大花盆', theme: 'pot', seed: 1201, gates: ['lock', 'item', 'tiny', 'lock'], item: 'boomerang', boss: 'beetle', enemies: ['slime', 'bat', 'ant', 'ladybug'], hazard: 'PIT', from: { map: 'forest', x: 17, y: 5 }, tier: 1 },
+  d2: { name: '地漏深处', theme: 'tide', seed: 2203, gates: ['lock', 'switch', 'tiny', 'item', 'lock'], item: 'bombs', boss: 'crabking', enemies: ['slime2', 'crab', 'octo', 'fly'], hazard: 'DWATER', from: { map: 'lake', x: 19, y: 10 }, tier: 2 },
+  d3: { name: '碗柜迷宫', theme: 'wood', seed: 3307, gates: ['lock', 'crack', 'switch', 'item', 'lock'], item: 'feather', boss: 'lavagolem', enemies: ['ant', 'roach', 'fly', 'rat'], hazard: 'PIT', from: { map: 'mountain', x: 17, y: 7 }, tier: 3 },
+  d4: { name: '罐头城堡', theme: 'junk', seed: 4409, gates: ['lock', 'pit', 'tiny', 'crack', 'item', 'lock', 'switch'], item: 'bow', boss: 'wizard', enemies: ['knight', 'rat', 'dust', 'roach'], hazard: 'PIT', from: { map: 'ruins', x: 17, y: 14 }, tier: 4 },
 };
 const ITEM_GATE = { boomerang: 'switch', bombs: 'crack', feather: 'pit', bow: 'eye' };
 const GATE_TILE = { lock: 'DLOCK', boss: 'DBOSS', eye: 'DEYE', crack: 'DCRACK', switch: 'DSWBAR', pit: 'PIT', tiny: 'DTINY' };

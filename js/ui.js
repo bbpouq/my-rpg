@@ -5,7 +5,7 @@ const UI = {
   pop(o) { const i = G.ui.indexOf(o); if (i >= 0) G.ui.splice(i, 1); Input.clear(); },
   top() { return G.ui[G.ui.length - 1]; },
 };
-const LEAF_LOOK = { tpl: 'sprout', a: '#9ae070', d: '#3a9a2a' };
+const LEAF_LOOK = { tpl: 'bug', a: '#f8e060', d: '#806020' };
 function say(speaker, lines, look) { return new Promise(res => UI.push(new DialogUI(speaker, lines, look, res))); }
 function ask(q, options, speaker, look) { return new Promise(res => UI.push(new ChoiceUI(q, options, speaker, look, res))); }
 function bigMessage(title, sub, icon) { return new Promise(res => UI.push(new BigMsgUI(title, sub, icon, res))); }
@@ -170,8 +170,8 @@ class PauseUI {
     drawText(ctx, '心之碎片', hx, hy - 9, '#7a3a10', 10, 'left', false, true);
     for (let j = 0; j < 6; j++) for (let k = 0; k < 7; k++) { const c = HEART_PX[j][k]; if (c === '.') continue; const q = (k < 4 ? 0 : 1) + (j < 3 ? 0 : 2); ctx.fillStyle = c === 'k' ? '#2a1018' : q < S.pieces ? '#f03050' : '#c8b090'; ctx.fillRect(hx + k * 4, hy + 4 + j * 4, 4, 4); }
     drawText(ctx, S.pieces + ' / 4', hx + 34, hy + 10, '#3a2a1a', 10);
-    drawText(ctx, '光之果实 ' + S.fruits + ' / 4', hx, hy + 34, '#3a2a1a', 10);
-    drawText(ctx, '钱包上限 ' + S.wallet, hx, hy + 48, '#3a2a1a', 10);
+    drawText(ctx, '星星糖 ' + S.fruits + ' / 4', hx, hy + 34, '#3a2a1a', 10);
+    drawText(ctx, '纽扣上限 ' + S.wallet, hx, hy + 48, '#3a2a1a', 10);
     const mx = 252, my = 16;
     for (const k in WORLD_LAYOUT) {
       const [gx, gy] = WORLD_LAYOUT[k], x = mx + (gx - 1) * 18, y = my + gy * 14;
@@ -192,8 +192,8 @@ class PauseUI {
 }
 const HELP_TEXT = [
   '方向键 / WASD：移动    Shift / L：翻滚\nJ 或 空格：挥剑 · 对话 · 确定\n按住 J 再松开：回旋斩！',
-  'K：使用道具（回旋镖、炸弹、羽毛、弓）\nQ / E：切换道具\nI 或 Esc：菜单    M：静音    F：全屏',
-  '站在发光的树桩上按 J，就能变小或变大。\n变小以后能钻进很小的洞，发现藏起来的世界！',
+  'K：使用道具（瓶盖、爆米花、弹簧、弹弓）\nQ / E：切换道具\nI 或 Esc：菜单    M：静音    F：全屏',
+  '站在发光的露珠上按 J 喝一口，就能变得像蚂蚁一样小。\n再按一次变回来。变小以后能钻进墙缝和小洞！',
 ];
 
 // ============ 商店 ============
@@ -201,9 +201,9 @@ function openShop() { return new Promise(res => UI.push(new ShopUI(res))); }
 class ShopUI {
   constructor(res) { this.res = res; this.i = 0; }
   list() {
-    const l = [{ id: 'potion', name: '红药水', price: 60, ok: () => S.potions < 2, why: '最多只能带 2 瓶', give: () => S.potions++ }];
-    if (S.items.bombs) l.push({ id: 'bombs', name: '炸弹 ×5', price: 20, ok: () => S.bombs < S.maxBombs, why: '炸弹已经满了', give: () => S.bombs = Math.min(S.maxBombs, S.bombs + 5) });
-    if (S.items.bow) l.push({ id: 'arrow', name: '箭 ×10', price: 20, ok: () => S.arrows < S.maxArrows, why: '箭已经满了', give: () => S.arrows = Math.min(S.maxArrows, S.arrows + 10) });
+    const l = [{ id: 'potion', name: '蜂蜜滴', price: 60, ok: () => S.potions < 2, why: '最多只能带 2 瓶', give: () => S.potions++ }];
+    if (S.items.bombs) l.push({ id: 'bombs', name: '爆米花 ×5', price: 20, ok: () => S.bombs < S.maxBombs, why: '爆米花已经满了', give: () => S.bombs = Math.min(S.maxBombs, S.bombs + 5) });
+    if (S.items.bow) l.push({ id: 'arrow', name: '豆子 ×10', price: 20, ok: () => S.arrows < S.maxArrows, why: '豆子已经满了', give: () => S.arrows = Math.min(S.maxArrows, S.arrows + 10) });
     if (!S.flags.shopPiece) l.push({ id: 'heartp', name: '心之碎片', price: 150, ok: () => true, give: () => { S.flags.shopPiece = true; gainPiece(); } });
     l.push({ id: null, name: '离开' });
     return l;
@@ -215,7 +215,7 @@ class ShopUI {
     const it = l[this.i];
     if (!it.id) { UI.pop(this); this.res(); return; }
     if (!it.ok()) { toast(it.why); Sfx.play('cancel'); return; }
-    if (S.rupees < it.price) { toast(it.price > S.wallet ? '钱包太小了，装不下这么多宝石……' : '宝石不够！'); Sfx.play('cancel'); return; }
+    if (S.rupees < it.price) { toast(it.price > S.wallet ? '火柴盒太小了，装不下这么多纽扣……' : '纽扣不够！'); Sfx.play('cancel'); return; }
     S.rupees -= it.price; it.give(); Sfx.play('coin'); toast('买下了 ' + it.name);
     this.i = Math.min(this.i, this.list().length - 1);
   }
@@ -223,7 +223,7 @@ class ShopUI {
     ctx.fillStyle = 'rgba(0,0,0,0.4)'; ctx.fillRect(0, 0, VW, VH);
     const l = this.list(), W = 200, H = l.length * 22 + 34, X = (VW - W) / 2, Y = 14;
     drawBox(ctx, X, Y, W, H);
-    drawText(ctx, '商店', X + 12, Y + 8, '#7a3a10', 12, 'left', false, true);
+    drawText(ctx, '瓶盖杂货铺', X + 12, Y + 8, '#7a3a10', 12, 'left', false, true);
     ctx.drawImage(getIcon(ITEMS.rupee), X + W - 52, Y + 7, 12, 12); drawText(ctx, String(S.rupees), X + W - 12, Y + 8, '#3a2a1a', 11, 'right');
     l.forEach((it, i) => {
       const y = Y + 28 + i * 22, sel = i === this.i;
@@ -264,9 +264,9 @@ class TitleUI {
     const bob = Math.sin(this.t * 3) * 1.5;
     ctx.save(); ctx.translate(VW / 2 - 12, 124); ctx.scale(1.5, 1.5); drawChar(ctx, HERO_LOOK, 0, Math.floor(this.t * 3) % 2, 0, 0); ctx.restore();
     drawMonLook(ctx, LEAF_LOOK, VW / 2 + 10, 116 + bob, 0.75);
-    drawText(ctx, '星屿物语', VW / 2 + 2, 14, 'rgba(30,40,80,0.5)', 30, 'center', false, true);
-    drawText(ctx, '星屿物语', VW / 2, 12, '#fff8d0', 30, 'center', false, true);
-    drawText(ctx, '～ 小小勇者与守护古树 ～', VW / 2, 48, '#2a4a6a', 10, 'center');
+    drawText(ctx, '豆丁物语', VW / 2 + 2, 14, 'rgba(30,40,80,0.5)', 30, 'center', false, true);
+    drawText(ctx, '豆丁物语', VW / 2, 12, '#fff8d0', 30, 'center', false, true);
+    drawText(ctx, '～ 后院里的小小大冒险 ～', VW / 2, 48, '#2a4a6a', 10, 'center');
     const bw = 110, bh = this.opts.length * 17 + 10, bx = VW / 2 - bw / 2, by = 62;
     drawBox(ctx, bx, by, bw, bh);
     this.opts.forEach((o, i) => {
@@ -281,7 +281,7 @@ class CreditsUI {
   draw(ctx) {
     ctx.fillStyle = '#0a0818'; ctx.fillRect(0, 0, VW, VH);
     for (let i = 0; i < 60; i++) { ctx.fillStyle = 'rgba(255,255,255,' + Math.abs(Math.sin(this.t + i)) + ')'; ctx.fillRect(hash2(i, 5) * VW, hash2(i, 6) * VH, 1, 1); }
-    const lines = ['～ 星屿物语 ～', '', '四颗光之果实回到了守护古树。', '古树重新长出了绿叶，', '星露村又迎来了和平。', '', '谢谢你，小小的勇者！', '', '（按 J 继续 —— 还有没找到的心之碎片哦）'];
+    const lines = ['～ 豆丁物语 ～', '', '四颗星星糖回到了灯笼草上。', '豆丁村的夜晚又亮起了点点灯光，', '连地下室的老鼠们也分到了一盏小灯。', '', '谢谢你，小豆！', '', '（按 J 继续 —— 房子里还藏着心之碎片哦）'];
     const off = Math.max(0, 140 - this.t * 30);
     lines.forEach((l, i) => drawText(ctx, l, VW / 2, 20 + i * 16 + off, i === 0 ? '#ffe8a0' : '#fff', i === 0 ? 15 : 11, 'center', false, i === 0));
   }

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>星屿物语 · 小小勇者与守护古树</title>
+<title>豆丁物语 · 后院大冒险</title>
 <style>
   html, body { margin: 0; padding: 0; background: #0c0a14; height: 100%; overflow: hidden; touch-action: none; -webkit-user-select: none; user-select: none; }
   body { display: flex; align-items: center; justify-content: center; }
@@ -709,6 +709,17 @@ const Particles = {
 <script>
 /* js/data.js */
 'use strict';
+Object.assign(ICON_TPL, {
+  needle: ['..............kk', '.............kwk', '............kwck', '...........kwck.', '..........kwck..', '.........kwck...', '........kwck....', '.......kwck.....', '......kwck......', '.....kwck.......', '....kwck........', '...kcck.........', '..kc.ck.........', '..kcck..........', '..kkk...........'],
+  cap: ['................', '....k.kkkk.k....', '...kkaaaaaakk...', '..kaaccccaaaak..', '.kkacaaaaaaaakk.', '..kacaaaaaaaak..', '.kkaaaaaaaaaakk.', '..kaaaaaaaaabk..', '.kkaaaaaaaabbkk.', '..kbaaaaaabbk...', '...kkbbbbbbkk...', '....k.kkkk.k....'],
+  popcorn: ['................', '.....kkk.kkk....', '....kwwwkwwwk...', '...kwwdwwwwdwk..', '..kwwwwwkwwwwk..', '..kwdwwwwwwdwk..', '...kwwwwdwwwk...', '..kwwwkwwwwwwk..', '..kwdwwwwkwwdk..', '...kwwwwwwwwk...', '....kkkwwkkk....', '.......kk.......'],
+  spring: ['................', '...kkkkkkkkk....', '...kaaaaaaak....', '....kkkkkkk.....', '...kaaaaaaak....', '....kkkkkkk.....', '...kaaaaaaak....', '....kkkkkkk.....', '...kaaaaaaak....', '....kkkkkkk.....', '...kdddddddk....', '...kkkkkkkkk....'],
+  sling: ['................', '..kk.......kk...', '.kaak.....kaak..', '.kaak.....kaak..', '..kaak...kaak...', '..kdddddddddk...', '...kaak.kaak....', '....kaakaak.....', '.....kaaak......', '......kak.......', '......kak.......', '......kak.......', '......kkk.......'],
+  bean: ['................', '................', '................', '......kkkk......', '.....kaacak.....', '....kaacaaak....', '....kaaaaaak....', '....kaaaaabk....', '.....kabbbk.....', '......kkkk......'],
+  honey: ['................', '.......kk.......', '......kaak......', '.....kacak......', '.....kaaak......', '....kacaaak.....', '...kaacaaaak....', '...kaaaaaaak....', '...kaaaaaabk....', '....kaaaabk.....', '.....kkkkk......'],
+  button: ['................', '.....kkkkkk.....', '....kaaccaak....', '...kacaaaaaak...', '...kcakkakkak...', '...kaakkakkbk...', '...kaaaaaaabk...', '...kaakkakkbk...', '...kaakkakkbk...', '....kaaaaabk....', '.....kkkkkk.....'],
+});
+
 // ============ 新增图标 ============
 Object.assign(ICON_TPL, {
   boomerang: ['................', '..kkkkk.........', '.kaaaaak........', '.kacccaak.......', '.kakkkcaak......', '..k...kcaak.....', '.......kcaak....', '........kcak....', '.........kak....', '.........kak....', '........kaak....', '........kkk.....'],
@@ -717,26 +728,26 @@ Object.assign(ICON_TPL, {
   wallet: ['................', '................', '.....kkkkkk.....', '....kaaaaaak....', '...kaaddddaak...', '..kaaaaaaaaaak..', '..kaaaaaaaaaak..', '..kaaaaccaaaak..', '..kaaaaccaaaak..', '..kbaaaaaaaabk..', '...kbbbbbbbbk...', '....kkkkkkkk....'],
 });
 
-// ============ 物品 ============
+// ============ 物品（全是大人家里的小东西） ============
 const ITEMS = {};
 function defItem(id, name, icon, color, desc, extra) { ITEMS[id] = Object.assign({ id, name, icon, color, desc: desc || '' }, extra || {}); }
-defItem('sword', '勇气之剑', 'sword', '#e8e8f0', '按 J 挥剑。按住 J 蓄力，松开放出回旋斩！');
-defItem('boomerang', '回旋镖', 'boomerang', '#e0a040', '扔出去会飞回来。能打晕敌人、击中远处的水晶开关、勾回道具。');
-defItem('bombs', '炸弹', 'bomb', '#3a3a5a', '放下后会爆炸。能炸开有裂缝的墙壁和岩石。', { color2: '#ffb020' });
-defItem('feather', '跳跃羽毛', 'feather', '#f0f0f8', '按 K 跳起来，可以越过两格宽的深坑。', { color2: '#e04848' });
-defItem('bow', '勇者之弓', 'bow', '#9a6232', '射箭。可以射中远处的机关之眼。');
-defItem('arrow', '箭', 'arrow', '#9a6232', '');
-defItem('potion', '红药水', 'potion', '#e84a6a', '生命归零时自动使用，回满所有的心。', { color2: '#a07040' });
+defItem('sword', '缝衣针', 'needle', '#c8d0e0', '奶奶的缝衣针，对豆丁来说就是一把长剑。按 J 刺，按住 J 再松开是回旋斩！');
+defItem('boomerang', '瓶盖', 'cap', '#e04848', '汽水瓶盖。扔出去会转一圈飞回来，能打晕虫子、按到远处的按钮、勾回纽扣。');
+defItem('bombs', '爆米花炸弹', 'popcorn', '#fff8e8', '放下后"嘭"地炸开！能炸开饼干墙和卡住的东西。', { color2: '#f0c040' });
+defItem('feather', '弹簧鞋', 'spring', '#c8ccd8', '圆珠笔里拆下来的弹簧。按 K 弹起来，可以跳过两格宽的缝。', { color2: '#e04848' });
+defItem('bow', '橡皮筋弹弓', 'sling', '#9a6232', '用橡皮筋做的弹弓，发射豆子。能打中远处画着的眼睛机关。', { color2: '#e04848' });
+defItem('arrow', '豆子', 'bean', '#7ac850', '弹弓的子弹。');
+defItem('potion', '蜂蜜滴', 'honey', '#f0b030', '生命归零时自动吃下，回满所有的心。');
 defItem('key', '小钥匙', 'key', '#e8c040', '能打开一扇锁住的门。');
-defItem('bosskey', '头目钥匙', 'bosskey', '#e04040', '能打开头目房间的大门。');
+defItem('bosskey', '大钥匙', 'bosskey', '#e04040', '能打开头目房间的大门。');
 defItem('heart', '心', 'heart', '#ff4060', '');
 defItem('heartc', '心之容器', 'heart', '#ff4060', '生命上限 +1');
 defItem('heartp', '心之碎片', 'heart', '#ff80a0', '集齐 4 片，生命上限 +1');
-defItem('rupee', '绿宝石', 'rupee', '#3ad060', '');
-defItem('rupee5', '蓝宝石', 'rupee', '#3a8ae8', '');
-defItem('rupee20', '红宝石', 'rupee', '#e84a4a', '');
-defItem('fruit', '光之果实', 'fruit', '#ffd84a', '守护古树的生命之源。', { color2: '#4caa3a' });
-defItem('wallet', '大钱包', 'wallet', '#a87440', '能装更多的宝石。', { color2: '#e8c040' });
+defItem('rupee', '绿纽扣', 'button', '#3ac060', '');
+defItem('rupee5', '蓝纽扣', 'button', '#3a8ae8', '');
+defItem('rupee20', '红纽扣', 'button', '#e84a4a', '');
+defItem('fruit', '星星糖', 'star', '#ffd84a', '豆丁村的灯笼就靠它发光。');
+defItem('wallet', '大火柴盒', 'wallet', '#a87440', '能装更多的纽扣。', { color2: '#e8c040' });
 const EQUIP_ORDER = ['boomerang', 'bombs', 'feather', 'bow'];
 const RUPEE_VAL = { rupee: 1, rupee5: 5, rupee20: 20 };
 
@@ -756,7 +767,7 @@ defTile('TDOOR', { draw(g) { fill(g, '#5a5a70'); rect(g, 1, 1, 14, 15, '#0a0610'
 defTile('RUIN', { solid: true, draw(g, R) { fill(g, '#8a9a7a'); for (let y = 0; y < 16; y += 4) { rect(g, 0, y, 16, 1, '#5a6a4a'); const o = (y / 4 % 2) * 4; for (let x = o; x < 16; x += 8) rect(g, x, y, 1, 4, '#5a6a4a'); } speck(g, R, 4, '#4a8a3a', 2, 1); } });
 // 缩小石桩：站在上面按 J 变小 / 变大
 defTile('STUMPP', { shrink: true, base: 'grass', anim: 3, draw(g, R, th, f) { ell(g, 8, 10, 7, 5, '#4e301a'); ell(g, 8, 9, 6, 4, '#a0703a'); ell(g, 8, 9, 4, 2, '#c89058'); const c = ['#7af07a', '#b0ffb0', '#d8ffd8'][f]; rect(g, 7, 6, 2, 2, c); rect(g, 6, 7, 1, 1, c); rect(g, 9, 7, 1, 1, c); rect(g, 3, 9, 1, 1, c); rect(g, 12, 9, 1, 1, c); } });
-defTile('DSTUMP', { shrink: true, base: 'dfloor', anim: 3, draw(g, R, th, f) { const c = ['#5ad05a', '#8af08a', '#b8ffb8'][f]; ell(g, 8, 8, 7, 6, '#1a3a1a'); ell(g, 8, 8, 6, 5, '#2a5a2a'); ell(g, 8, 8, 4, 3, c); rect(g, 7, 5, 2, 6, '#e0ffe0'); rect(g, 5, 7, 6, 2, '#e0ffe0'); } });
+defTile('DSTUMP', { shrink: true, base: 'dfloor', anim: 3, draw(g, R, th, f) { ell(g, 8, 12, 6, 3, 'rgba(0,0,0,0.25)'); ell(g, 8, 8, 5, 5, '#2a6ab8'); ell(g, 8, 8, 4, 4, ['#8ad0ff', '#a8e0ff', '#c8f0ff'][f]); rect(g, 6, 5, 2, 2, '#ffffff'); rect(g, 10, 10, 1, 1, '#ffffff'); } });
 defTile('BRAMBLE', { solid: true, draw(g, R) { fill(g, '#24481f'); speck(g, R, 16, '#3a6a2a', 2, 2); speck(g, R, 6, '#163010', 2, 2); speck(g, R, 4, '#d84040'); } });
 defTile('HEDGEHOLE', { solid: true, tinyPass: true, draw(g, R) { fill(g, '#24481f'); speck(g, R, 14, '#3a6a2a', 2, 2); speck(g, R, 4, '#d84040'); ell(g, 8, 13, 3, 3, '#0a1408'); rect(g, 5, 13, 7, 3, '#0a1408'); } });
 defTile('MHOLE', { solid: true, tinyPass: true, draw(g, R) { fill(g, '#6b4524'); for (let x = 1; x < 16; x += 4) rect(g, x, 0, 1, 16, '#4e301a'); speck(g, R, 5, '#8a5a30', 1, 3); ell(g, 8, 13, 3, 3, '#0a0604'); rect(g, 5, 13, 7, 3, '#0a0604'); rect(g, 4, 11, 1, 1, '#7af07a'); rect(g, 11, 11, 1, 1, '#7af07a'); } });
@@ -844,26 +855,26 @@ function decorate(m, R, prot, opts) {
 // ============ 野外 ============
 const MAPDEF = {};
 MAPDEF.village = () => {
-  const m = newMap('village', 36, 26, 'GRASS'); m.name = '星露村'; m.music = 'village';
+  const m = newMap('village', 36, 26, 'GRASS'); m.name = '豆丁村'; m.theme = 'garden'; m.music = 'village';
   const R = mulberry32(11);
   borderT(m, 'TREE', 2, [['n', 12, 15], ['e', 11, 13]]);
   rectT(m, 12, 0, 4, 9, 'PATH'); rectT(m, 2, 11, 34, 2, 'PATH'); rectT(m, 26, 11, 10, 3, 'PATH');
   rectT(m, 10, 13, 2, 9, 'PATH'); rectT(m, 2, 21, 32, 1, 'PATH');
   rectT(m, 16, 8, 10, 6, 'STONE');
   rectT(m, 17, 2, 4, 5, 'TREE'); setT(m, 18, 6, 'MHOLE'); addWarp(m, 18, 6, 'm_root'); setT(m, 18, 8, 'STUMPP');
-  stampBuilding(m, { x: 3, y: 3, w: 6, h: 5, door: 2, roof: 'ROOF_R', to: 'home', label: '我的家' });
-  stampBuilding(m, { x: 25, y: 3, w: 7, h: 5, door: 3, roof: 'ROOF_B', to: 'shop', label: '商店' });
+  stampBuilding(m, { x: 3, y: 3, w: 6, h: 5, door: 2, roof: 'ROOF_R', to: 'home', label: '我的蘑菇屋' });
+  stampBuilding(m, { x: 25, y: 3, w: 7, h: 5, door: 3, roof: 'ROOF_B', to: 'shop', label: '瓶盖杂货铺' });
   stampBuilding(m, { x: 3, y: 15, w: 6, h: 5, door: 2, roof: 'ROOF_G', to: 'elderhouse', label: '长老家' });
-  stampBuilding(m, { x: 24, y: 15, w: 8, h: 5, door: 4, roof: 'ROOF_K', to: 'dojo', label: '剑术道场' });
+  stampBuilding(m, { x: 24, y: 15, w: 8, h: 5, door: 4, roof: 'ROOF_K', to: 'dojo', label: '缝针道场' });
   rectT(m, 5, 8, 1, 3, 'PATH'); rectT(m, 28, 8, 1, 3, 'PATH'); rectT(m, 5, 20, 1, 1, 'PATH'); rectT(m, 28, 20, 1, 1, 'PATH');
-  addSign(m, 11, 9, '↑ 北：迷雾森林\n→ 东：青草原');
-  addSign(m, 21, 7, '【守护古树】\n守护星露村千年的大树。\n树根下好像有个很小很小的洞……');
+  addSign(m, 11, 9, '↑ 北：后院花园\n→ 东：木头门廊（大人房子的后门）');
+  addSign(m, 21, 7, '【灯笼草】\n豆丁村的灯笼草。以前它每晚都被星星糖照得亮堂堂的……\n根部好像有个蚂蚁才钻得进的小洞。');
   decorate(m, R, [[0, 9, 36, 5], [11, 0, 6, 10], [15, 1, 12, 14], [2, 2, 8, 9], [24, 2, 9, 9], [2, 14, 8, 9], [23, 14, 11, 9], [9, 12, 4, 11], [2, 20, 32, 3]]);
   m.exits = { n: { to: 'forest', off: 0 }, e: { to: 'field', off: 0 } };
   return m;
 };
 MAPDEF.forest = () => {
-  const m = newMap('forest', 36, 26, 'GRASS'); m.name = '迷雾森林'; m.music = 'forest';
+  const m = newMap('forest', 36, 26, 'GRASS'); m.name = '后院花园'; m.theme = 'garden'; m.music = 'forest';
   const R = mulberry32(22);
   borderT(m, 'TREE', 2, [['s', 12, 15]]);
   rectT(m, 12, 19, 4, 7, 'PATH'); rectT(m, 13, 10, 2, 10, 'PATH');
@@ -874,30 +885,30 @@ MAPDEF.forest = () => {
   rectT(m, 3, 4, 5, 3, 'TREE'); setT(m, 5, 6, 'MHOLE'); addWarp(m, 5, 6, 'm_forest'); setT(m, 5, 8, 'STUMPP'); rectT(m, 5, 9, 1, 4, 'PATH'); rectT(m, 5, 12, 8, 1, 'PATH');
   rectT(m, 28, 3, 5, 5, 'CHASM'); setT(m, 30, 5, 'GRASS');
   rectT(m, 3, 16, 6, 4, 'TALL'); rectT(m, 25, 13, 7, 5, 'TALL');
-  addSign(m, 16, 12, '森林神殿\n入口被荆棘封住了。\n荆棘下面有个小洞……');
+  addSign(m, 16, 12, '大花盆\n入口被玫瑰刺丛挡住了。\n刺丛底下有个小洞……');
   decorate(m, R, [[11, 0, 15, 13], [2, 3, 7, 10], [4, 11, 10, 3], [26, 2, 8, 7], [11, 18, 6, 8]], { tree: 0.16, tall: 0.05 });
   m.exits = { s: { to: 'village', off: 0 } };
   m.enemies = [['slime', 4], ['octo', 2]];
   return m;
 };
 MAPDEF.field = () => {
-  const m = newMap('field', 40, 26, 'GRASS'); m.name = '青草原'; m.music = 'field';
+  const m = newMap('field', 40, 26, 'GRASS'); m.name = '木头门廊'; m.theme = 'porch'; m.music = 'field';
   const R = mulberry32(33);
   borderT(m, 'TREE', 2, [['w', 11, 13], ['e', 11, 13], ['n', 18, 21], ['s', 18, 21]]);
   rectT(m, 0, 11, 40, 3, 'PATH'); rectT(m, 18, 0, 4, 26, 'PATH');
   rectT(m, 2, 20, 36, 2, 'CHASM');
   rectT(m, 31, 1, 5, 4, 'CLIFF'); setT(m, 33, 2, 'GRASS'); setT(m, 33, 3, 'GRASS'); setT(m, 33, 4, 'CRACK');
   rectT(m, 6, 3, 3, 3, 'TREE'); setT(m, 7, 5, 'MHOLE'); addWarp(m, 7, 5, 'm_field'); setT(m, 7, 7, 'STUMPP');
-  rectT(m, 4, 15, 8, 4, 'TALL'); rectT(m, 27, 15, 8, 4, 'TALL'); rectT(m, 25, 4, 4, 4, 'TALL');
-  addSign(m, 22, 10, '↑ 岩石山道   → 镜湖\n↓ 古代遗迹   ← 星露村');
-  addSign(m, 17, 18, '前方是大裂谷。\n普通人是跳不过去的……');
-  decorate(m, R, [[0, 10, 40, 5], [17, 0, 6, 26], [30, 0, 7, 6], [5, 2, 5, 7], [0, 19, 40, 4]], { tree: 0.04, bush: 0.04 });
+  rectT(m, 4, 15, 8, 4, 'TALL'); rectT(m, 27, 15, 8, 4, 'TALL');
+  addSign(m, 22, 10, '↑ 厨房   → 浴室\n↓ 地下室   ← 豆丁村');
+  addSign(m, 17, 18, '前面是一条宽宽的木板缝。\n掉下去可就惨了……得想办法跳过去。');
+  decorate(m, R, [[0, 10, 40, 5], [17, 0, 6, 26], [30, 0, 7, 6], [5, 2, 5, 7], [0, 19, 40, 4], [23, 2, 8, 7]], { tree: 0.04, bush: 0.04 });
   m.exits = { w: { to: 'village', off: 0 }, e: { to: 'lake', off: 0 }, n: { to: 'mountain', off: 0 }, s: { to: 'ruins', off: 0 } };
-  m.enemies = [['slime2', 3], ['octo', 2], ['bat', 1]];
+  m.enemies = [['slime2', 2], ['ladybug', 2], ['bat', 1]];
   return m;
 };
 MAPDEF.lake = () => {
-  const m = newMap('lake', 36, 26, 'GRASS'); m.name = '镜湖'; m.music = 'field';
+  const m = newMap('lake', 36, 26, 'GRASS'); m.name = '浴室'; m.theme = 'bath'; m.music = 'field';
   const R = mulberry32(44);
   borderT(m, 'TREE', 2, [['w', 11, 13]]);
   rectT(m, 0, 11, 9, 3, 'PATH');
@@ -906,14 +917,14 @@ MAPDEF.lake = () => {
   setT(m, 16, 11, 'CRYSW');
   rectT(m, 3, 18, 3, 3, 'TREE'); setT(m, 4, 20, 'MHOLE'); addWarp(m, 4, 20, 'm_lake'); setT(m, 4, 22, 'STUMPP');
   rectT(m, 2, 3, 5, 5, 'TALL');
-  addSign(m, 7, 9, '湖心岛上有座神殿。\n听说以前有座桥，\n是用岛上的水晶开关升起来的……');
+  addSign(m, 7, 9, '浴缸边的地漏里好像藏着什么。\n对面那颗蓝色按钮，一按就会放下冰棍棒桥……\n可惜太远了。');
   decorate(m, R, [[0, 10, 10, 5], [2, 17, 5, 7], [7, 2, 3, 22]], { tree: 0.05 });
   m.exits = { w: { to: 'field', off: 0 } };
-  m.enemies = [['crab', 3], ['octo', 1]];
+  m.enemies = [['crab', 3], ['slime2', 2]];
   return m;
 };
 MAPDEF.mountain = () => {
-  const m = newMap('mountain', 36, 26, 'ROCKY'); m.name = '岩石山道'; m.music = 'forest'; m.base = 'rocky'; m.theme = 'cave';
+  const m = newMap('mountain', 36, 26, 'ROCKY'); m.name = '厨房'; m.music = 'village'; m.base = 'rocky'; m.theme = 'kitchen';
   const R = mulberry32(55);
   borderT(m, 'CLIFF', 2, [['s', 18, 21]]);
   rectT(m, 18, 7, 4, 19, 'PATH'); rectT(m, 17, 7, 1, 17, 'PATH');
@@ -922,15 +933,15 @@ MAPDEF.mountain = () => {
   rectT(m, 4, 3, 5, 4, 'CLIFF'); setT(m, 6, 6, 'MHOLE'); addWarp(m, 6, 6, 'm_mountain'); setT(m, 6, 8, 'STUMPP');
   rectT(m, 8, 13, 7, 1, 'CLIFF'); rectT(m, 24, 10, 6, 1, 'CLIFF');
   rectT(m, 3, 15, 8, 5, 'TALLD'); rectT(m, 25, 15, 8, 5, 'TALLD');
-  addSign(m, 21, 8, '山之洞窟\n巨石挡住了入口。\n要是有炸弹就好了……');
+  addSign(m, 21, 8, '碗柜\n一块大饼干卡住了柜门缝。\n要是能把它炸开就好了……');
   const prot = [[16, 5, 7, 21], [3, 2, 7, 8], [13, 0, 10, 7]];
   scatterT(m, R, 'BOULDER', 0.03, ['ROCKY'], prot); scatterT(m, R, 'PINE', 0.03, ['ROCKY'], prot); scatterT(m, R, 'TALLD', 0.03, ['ROCKY'], prot);
   m.exits = { s: { to: 'field', off: 0 } };
-  m.enemies = [['firebat', 3], ['skel', 2]];
+  m.enemies = [['fly', 3], ['ant', 2], ['roach', 1]];
   return m;
 };
 MAPDEF.ruins = () => {
-  const m = newMap('ruins', 36, 26, 'GRASS'); m.name = '古代遗迹'; m.music = 'dungeon';
+  const m = newMap('ruins', 36, 26, 'GRASS'); m.name = '地下室'; m.theme = 'basement'; m.music = 'dungeon';
   const R = mulberry32(66);
   borderT(m, 'TREE', 2, [['n', 18, 21]]);
   rectT(m, 18, 0, 4, 10, 'PATH'); rectT(m, 10, 10, 16, 5, 'STONE');
@@ -939,11 +950,11 @@ MAPDEF.ruins = () => {
   rectT(m, 28, 4, 4, 3, 'RUIN'); setT(m, 29, 6, 'MHOLE'); addWarp(m, 29, 6, 'm_ruins'); setT(m, 29, 8, 'STUMPP');
   for (const [x, y] of [[11, 11], [24, 11], [11, 14], [24, 14], [6, 18], [29, 18]]) setT(m, x, y, 'STATUE');
   rectT(m, 26, 12, 7, 4, 'TALL'); rectT(m, 3, 12, 6, 3, 'TALL');
-  addSign(m, 22, 9, '古代遗迹 · 暗影之塔\n暗影巫师就在里面。');
-  addSign(m, 9, 6, '石墙上有一只奇怪的眼睛……');
+  addSign(m, 22, 9, '罐头城堡\n老鼠大王就住在里面！');
+  addSign(m, 9, 6, '书堆上画着一只奇怪的眼睛……');
   decorate(m, R, [[17, 0, 6, 16], [9, 9, 18, 14], [2, 3, 8, 7], [27, 3, 6, 7]], { tree: 0.06 });
   m.exits = { n: { to: 'field', off: 0 } };
-  m.enemies = [['knight', 2], ['wisp', 2]];
+  m.enemies = [['rat', 3], ['dust', 2]];
   return m;
 };
 
@@ -964,11 +975,11 @@ MAPDEF.dojo = () => { const m = makeInterior('dojo', '剑术道场', 12, 9, [['S
 
 // ============ 小人世界 ============
 const MINIS = {
-  m_root: { name: '古树根下的世界', back: { map: 'village', x: 18, y: 7 }, reward: 'heartp', seed: 101, enemies: ['ant', 'ant', 'ladybug'] },
-  m_forest: { name: '空心圆木', back: { map: 'forest', x: 5, y: 7 }, reward: 'heartp', seed: 202, enemies: ['ant', 'ladybug', 'ladybug'] },
-  m_field: { name: '树桩里的世界', back: { map: 'field', x: 7, y: 6 }, reward: 'wallet', seed: 303, enemies: ['ant', 'ant', 'spider'] },
-  m_lake: { name: '芦苇丛', back: { map: 'lake', x: 4, y: 21 }, reward: 'heartp', seed: 404, enemies: ['ladybug', 'spider', 'ant'], water: true },
-  m_mountain: { name: '岩缝深处', back: { map: 'mountain', x: 6, y: 7 }, reward: 'heartp', seed: 505, enemies: ['spider', 'spider', 'ant'], rock: true },
+  m_root: { name: '灯笼草根下', back: { map: 'village', x: 18, y: 7 }, reward: 'heartp', seed: 101, enemies: ['ant', 'ant', 'ladybug'] },
+  m_forest: { name: '蚯蚓洞', back: { map: 'forest', x: 5, y: 7 }, reward: 'heartp', seed: 202, enemies: ['ant', 'ladybug', 'ladybug'] },
+  m_field: { name: '木板夹缝', back: { map: 'field', x: 7, y: 6 }, reward: 'wallet', seed: 303, enemies: ['ant', 'ant', 'spider'] },
+  m_lake: { name: '墙缝里的苔藓', back: { map: 'lake', x: 4, y: 21 }, reward: 'heartp', seed: 404, enemies: ['ladybug', 'spider', 'ant'], water: true },
+  m_mountain: { name: '踢脚线后面', back: { map: 'mountain', x: 6, y: 7 }, reward: 'heartp', seed: 505, enemies: ['spider', 'spider', 'ant'], rock: true },
   m_ruins: { name: '蚂蚁王国', back: { map: 'ruins', x: 29, y: 7 }, reward: 'wallet', seed: 606, enemies: ['ant', 'ant', 'ant', 'spider'] },
 };
 for (const k in MINIS) INTERIOR_BACK[k] = MINIS[k].back;
@@ -1006,10 +1017,10 @@ function genMini(id) {
 
 // ============ 地下城（程序生成，固定种子） ============
 const DUNGEONS = {
-  d1: { name: '森林神殿', theme: 'forest', seed: 1201, gates: ['lock', 'item', 'tiny', 'lock'], item: 'boomerang', boss: 'beetle', enemies: ['slime', 'bat', 'octo', 'slime'], hazard: 'PIT', from: { map: 'forest', x: 17, y: 5 }, tier: 1 },
-  d2: { name: '湖底神殿', theme: 'tide', seed: 2203, gates: ['lock', 'switch', 'tiny', 'item', 'lock'], item: 'bombs', boss: 'crabking', enemies: ['slime2', 'crab', 'octo', 'bat'], hazard: 'DWATER', from: { map: 'lake', x: 19, y: 10 }, tier: 2 },
-  d3: { name: '山之洞窟', theme: 'lava', seed: 3307, gates: ['lock', 'crack', 'switch', 'item', 'lock'], item: 'feather', boss: 'lavagolem', enemies: ['firebat', 'skel', 'wisp', 'octo2'], hazard: 'LAVA', from: { map: 'mountain', x: 17, y: 7 }, tier: 3 },
-  d4: { name: '暗影之塔', theme: 'shadow', seed: 4409, gates: ['lock', 'pit', 'tiny', 'crack', 'item', 'lock', 'switch'], item: 'bow', boss: 'wizard', enemies: ['knight', 'wisp2', 'skel3', 'bat3'], hazard: 'PIT', from: { map: 'ruins', x: 17, y: 14 }, tier: 4 },
+  d1: { name: '大花盆', theme: 'pot', seed: 1201, gates: ['lock', 'item', 'tiny', 'lock'], item: 'boomerang', boss: 'beetle', enemies: ['slime', 'bat', 'ant', 'ladybug'], hazard: 'PIT', from: { map: 'forest', x: 17, y: 5 }, tier: 1 },
+  d2: { name: '地漏深处', theme: 'tide', seed: 2203, gates: ['lock', 'switch', 'tiny', 'item', 'lock'], item: 'bombs', boss: 'crabking', enemies: ['slime2', 'crab', 'octo', 'fly'], hazard: 'DWATER', from: { map: 'lake', x: 19, y: 10 }, tier: 2 },
+  d3: { name: '碗柜迷宫', theme: 'wood', seed: 3307, gates: ['lock', 'crack', 'switch', 'item', 'lock'], item: 'feather', boss: 'lavagolem', enemies: ['ant', 'roach', 'fly', 'rat'], hazard: 'PIT', from: { map: 'mountain', x: 17, y: 7 }, tier: 3 },
+  d4: { name: '罐头城堡', theme: 'junk', seed: 4409, gates: ['lock', 'pit', 'tiny', 'crack', 'item', 'lock', 'switch'], item: 'bow', boss: 'wizard', enemies: ['knight', 'rat', 'dust', 'roach'], hazard: 'PIT', from: { map: 'ruins', x: 17, y: 14 }, tier: 4 },
 };
 const ITEM_GATE = { boomerang: 'switch', bombs: 'crack', feather: 'pit', bow: 'eye' };
 const GATE_TILE = { lock: 'DLOCK', boss: 'DBOSS', eye: 'DEYE', crack: 'DCRACK', switch: 'DSWBAR', pit: 'PIT', tiny: 'DTINY' };
@@ -1177,7 +1188,7 @@ const WORLD_LAYOUT = { forest: [1, 0], mountain: [2, 0], village: [1, 1], field:
 const ENEMY_KINDS = {
   slime: { name: '史莱姆', look: { tpl: 'blob', a: '#7ad05a' }, hp: 2, dmg: 1, spd: 30, ai: 'hop' },
   slime2: { name: '蓝史莱姆', look: { tpl: 'blob', a: '#4a8af0' }, hp: 3, dmg: 1, spd: 36, ai: 'hop' },
-  bat: { name: '蝙蝠', look: { tpl: 'bat', a: '#6a4a8a' }, hp: 1, dmg: 1, spd: 55, ai: 'bat', fly: true },
+  bat: { name: '飞蛾', look: { tpl: 'bat', a: '#b0906a', r: '#f0e0a0' }, hp: 1, dmg: 1, spd: 55, ai: 'bat', fly: true },
   firebat: { name: '火焰蝙蝠', look: { tpl: 'bat', a: '#e0502a', r: '#ffd040' }, hp: 2, dmg: 2, spd: 62, ai: 'bat', fly: true },
   bat3: { name: '暗影蝙蝠', look: { tpl: 'bat', a: '#3a1a4a', r: '#f03a3a' }, hp: 3, dmg: 2, spd: 66, ai: 'bat', fly: true },
   skel: { name: '骷髅兵', look: { tpl: 'knight', a: '#e8e4d8', b: '#a8a498' }, hp: 3, dmg: 1, spd: 34, ai: 'chase' },
@@ -1187,16 +1198,20 @@ const ENEMY_KINDS = {
   octo2: { name: '喷火章鱼', look: { tpl: 'blob', a: '#e0602a', r: '#ffd040' }, hp: 3, dmg: 2, spd: 28, ai: 'shooter', shot: 'fire' },
   wisp: { name: '鬼火', look: { tpl: 'ghost', a: '#ff8a3a' }, hp: 3, dmg: 1, spd: 22, ai: 'wisp', fly: true, shot: 'fire' },
   wisp2: { name: '暗魂', look: { tpl: 'ghost', a: '#8a4ad0' }, hp: 4, dmg: 2, spd: 26, ai: 'wisp', fly: true, shot: 'shadow' },
-  knight: { name: '铁甲兵', look: { tpl: 'knight', a: '#8a8aa0', b: '#5a5a70' }, hp: 5, dmg: 2, spd: 30, ai: 'chase' },
+  knight: { name: '锡兵', look: { tpl: 'knight', a: '#d84848', b: '#a03030', c: '#f0d040' }, hp: 5, dmg: 2, spd: 30, ai: 'chase' },
+  rat: { name: '小老鼠', look: { tpl: 'mouse', a: '#8a8a98', d: '#f0a0b0' }, hp: 3, dmg: 1, spd: 50, ai: 'chase' },
+  roach: { name: '蟑螂', look: { tpl: 'bug', a: '#8a5a2a', d: '#3a2010' }, hp: 2, dmg: 1, spd: 60, ai: 'crab' },
+  fly: { name: '苍蝇', look: { tpl: 'bat', a: '#4a4a5a', r: '#e04040' }, hp: 1, dmg: 1, spd: 65, ai: 'bat', fly: true },
+  dust: { name: '灰尘精', look: { tpl: 'ghost', a: '#a8a8b0' }, hp: 3, dmg: 1, spd: 24, ai: 'wisp', fly: true, shot: 'rock' },
   ant: { name: '大蚂蚁', look: { tpl: 'bug', a: '#c03a2a', d: '#5a1a10' }, hp: 2, dmg: 1, spd: 40, ai: 'chase' },
   ladybug: { name: '瓢虫', look: { tpl: 'bug', a: '#e84040', d: '#1a1a1a' }, hp: 2, dmg: 1, spd: 30, ai: 'hop' },
   spider: { name: '蜘蛛', look: { tpl: 'crab', a: '#4a3a5a', d: '#2a1a3a' }, hp: 3, dmg: 1, spd: 48, ai: 'crab' },
 };
 const BOSS_KINDS = {
-  beetle: { name: '铁甲甲虫王', look: { tpl: 'bug', a: '#3a6a3a', d: '#1a3a1a', horn: '#d0d0d0' }, hp: 8, dmg: 1, weak: 'boomerang', pats: ['walk', 'charge', 'walk', 'summon'], minion: 'slime', shot: 'rock' },
-  crabking: { name: '岩壳巨蟹', look: { tpl: 'crab', a: '#4a6ad0', d: '#2a3a8a' }, hp: 10, dmg: 2, weak: 'bomb', pats: ['charge', 'bubbles', 'walk', 'seeds'], minion: 'crab', shot: 'bubble' },
-  lavagolem: { name: '熔岩魔像', look: { tpl: 'golem', a: '#a03a2a', c: '#ff9a40', d: '#2a1010' }, hp: 12, dmg: 2, weak: null, pats: ['walk', 'slam', 'seeds', 'slam', 'summon'], minion: 'firebat', shot: 'fire' },
-  wizard: { name: '暗影巫师', look: { tpl: 'spirit', a: '#3a2a5a', c: '#6a4a9a', d: '#1a0a2a', crown: true }, hp: 16, dmg: 2, weak: 'arrow', pats: ['teleport', 'ring', 'seeds', 'summon', 'teleport', 'slam'], minion: 'wisp2', shot: 'shadow' },
+  beetle: { name: '独角仙骑士', look: { tpl: 'bug', a: '#3a6a3a', d: '#1a3a1a', horn: '#d0d0d0' }, hp: 8, dmg: 1, weak: 'boomerang', pats: ['walk', 'charge', 'walk', 'summon'], minion: 'slime', shot: 'rock' },
+  crabking: { name: '蟑螂将军', look: { tpl: 'bug', a: '#8a5a2a', d: '#3a2010', horn: '#5a3a1a' }, hp: 10, dmg: 2, weak: 'bomb', pats: ['charge', 'bubbles', 'walk', 'seeds'], minion: 'roach', shot: 'bubble' },
+  lavagolem: { name: '发霉面包怪', look: { tpl: 'golem', a: '#c8a060', c: '#e8d8a0', d: '#4a7a3a' }, hp: 12, dmg: 2, weak: null, pats: ['walk', 'slam', 'seeds', 'slam', 'summon'], minion: 'fly', shot: 'rock' },
+  wizard: { name: '老鼠大王', look: { tpl: 'mouse', a: '#7a7a88', d: '#f0a0b0', c: '#c8c8d0', crown: true }, hp: 16, dmg: 2, weak: 'arrow', pats: ['teleport', 'ring', 'seeds', 'summon', 'teleport', 'slam'], minion: 'rat', shot: 'rock' },
 };
 const SHOT_COLOR = { rock: '#8a7a6a', fire: '#ff7020', shadow: '#a050f0', bubble: '#8ad0ff', wave: '#ffcf60' };
 
@@ -1447,10 +1462,11 @@ class Player extends Ent {
   }
   drawBlade(ctx, x, y, ang) {
     ctx.save(); ctx.translate(x, y); ctx.rotate(ang);
-    ctx.fillStyle = '#1c1420'; ctx.fillRect(1, -2, 6, 5); ctx.fillRect(5, -4, 3, 9); ctx.fillRect(7, -2, 13, 5); ctx.fillRect(20, -1, 1, 3);
-    ctx.fillStyle = '#6a3a18'; ctx.fillRect(2, -1, 4, 3); ctx.fillStyle = '#f0c040'; ctx.fillRect(6, -3, 1, 7);
     const glow = this.chargeFull && Math.floor(G.t * 16) % 2;
-    ctx.fillStyle = glow ? '#fff6a0' : '#c8d0e0'; ctx.fillRect(8, -1, 12, 3); ctx.fillStyle = glow ? '#ffffff' : '#ffffff'; ctx.fillRect(8, -1, 11, 1); ctx.fillStyle = '#8890a8'; ctx.fillRect(8, 1, 11, 1);
+    ctx.fillStyle = '#1c1420'; ctx.fillRect(1, -2, 21, 4); ctx.fillRect(22, -1, 2, 2);
+    ctx.fillStyle = glow ? '#fff6a0' : '#c8d0e0'; ctx.fillRect(2, -1, 20, 2); ctx.fillStyle = '#ffffff'; ctx.fillRect(4, -1, 17, 1);
+    ctx.fillStyle = '#1c1420'; ctx.fillRect(3, -1, 2, 1);
+    ctx.strokeStyle = '#e04848'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(3.5, -0.5); ctx.quadraticCurveTo(-3, 2 + Math.sin(G.t * 10) * 2, -6, -1); ctx.stroke();
     ctx.restore();
   }
   drawSword(ctx, x, y) {
@@ -1616,7 +1632,7 @@ class Boss extends Ent {
     if (this.armored) {
       if (src === this.k.weak) { this.armored = false; this.stun = 3.5; this.state = 'idle'; this.t = 0.5; Sfx.play('secret'); Particles.text(this.cx(), this.y, '弱点！', '#ffe060'); return; }
       Sfx.play('cancel'); Particles.text(this.cx(), this.y, '叮！', '#ccc');
-      if (src === 'sword' && !this.hinted) { this.hinted = true; toast({ boomerang: '剑砍不动！先用回旋镖打晕它！', bomb: '外壳太硬了！用炸弹炸开它！', arrow: '它用暗影护住了自己……用弓箭射它！' }[this.k.weak]); }
+      if (src === 'sword' && !this.hinted) { this.hinted = true; toast({ boomerang: '针刺不进去！先用瓶盖砸晕它！', bomb: '壳太硬了！用爆米花炸弹炸它！', arrow: '它躲在罐头盔甲里……用弹弓打它的眼睛！' }[this.k.weak]); }
       return;
     }
     if (src === 'boomerang') { this.stun = Math.max(this.stun, 1); return; }
@@ -1654,7 +1670,7 @@ class Proj extends Ent {
   }
   draw(ctx, cx, cy) {
     const x = this.x - cx, y = this.y - cy;
-    if (this.kind === 'arrow') { ctx.save(); ctx.translate(x, y); ctx.rotate(Math.atan2(this.vy, this.vx)); ctx.fillStyle = '#8a5a2a'; ctx.fillRect(-7, -0.5, 10, 1.5); ctx.fillStyle = '#d0d0d8'; ctx.fillRect(3, -1.5, 3, 3.5); ctx.fillStyle = '#e04848'; ctx.fillRect(-8, -1.5, 2, 3.5); ctx.restore(); return; }
+    if (this.kind === 'arrow') { ctx.fillStyle = PAL.outline; ctx.beginPath(); ctx.arc(x, y, 3.5, 0, 7); ctx.fill(); ctx.fillStyle = '#7ac850'; ctx.beginPath(); ctx.arc(x, y, 2.5, 0, 7); ctx.fill(); ctx.fillStyle = '#c8f0a0'; ctx.fillRect(x - 1.5, y - 1.5, 1, 1); return; }
     const c = SHOT_COLOR[this.kind] || '#fff';
     if (this.kind === 'wave') { ctx.fillStyle = c; ctx.fillRect(x - 4, y - 1, 8, 3); ctx.fillStyle = '#fff'; ctx.fillRect(x - 2, y - 1, 4, 1); return; }
     ctx.fillStyle = shade(c, -0.4); ctx.beginPath(); ctx.arc(x, y, 4, 0, 7); ctx.fill();
@@ -1892,25 +1908,25 @@ function cycleItem(d) {
 function giveItem(id) { S.items[id] = true; if (!S.equip) S.equip = id; }
 function useItem(p) {
   if (!S.equip) { if (S.flags.gotSword) toast('还没有道具。K 键用来使用道具。'); return; }
-  if (S.tiny) { toast('变小的时候不能用道具。'); return; }
+  if (S.tiny) { toast('变成蚂蚁那么小的时候拿不动道具……'); return; }
   if (p.itemCD > 0) return;
   const it = S.equip, d = DIRS[p.dir];
   p.toolT = G.t + 0.25; p.toolItem = it;
   if (it === 'boomerang') { if (G.ents.some(e => e instanceof Boomerang)) return; G.ents.push(new Boomerang(p)); Sfx.play('swing'); p.itemCD = 0.2; }
   else if (it === 'bombs') {
-    if (S.bombs <= 0) { toast('没有炸弹了！可以在商店买。'); Sfx.play('cancel'); return; }
+    if (S.bombs <= 0) { toast('没有爆米花了！可以在杂货铺买。'); Sfx.play('cancel'); return; }
     if (G.ents.filter(e => e instanceof Bomb).length >= 2) return;
     S.bombs--; G.ents.push(new Bomb(p.x + d[0] * 12, p.y + d[1] * 10 + 2)); Sfx.play('plant'); p.itemCD = 0.3;
   }
   else if (it === 'feather') { if (p.z > 0) return; p.vz = 175; p.z = 0.1; Sfx.play('bow'); p.itemCD = 0.1; }
   else if (it === 'bow') {
-    if (S.arrows <= 0) { toast('没有箭了！可以在商店买。'); Sfx.play('cancel'); return; }
+    if (S.arrows <= 0) { toast('没有豆子了！可以在杂货铺买。'); Sfx.play('cancel'); return; }
     S.arrows--; Sfx.play('bow'); shoot(p.cx() + d[0] * 6, p.cy() - 4 + d[1] * 6, d[0] * 240, d[1] * 240, 'arrow', 2, 'player'); p.itemCD = 0.35;
   }
 }
 // 变小 / 变大
 function toggleTiny() {
-  if (!S.flags.gotLeaf) { toast('一个发着微光的树桩……好像有什么魔力。'); return; }
+  if (!S.flags.gotLeaf) { toast('一颗发着微光的露珠……好像有什么魔力。'); return; }
   const p = G.player;
   runScript(async () => {
     const [tx, ty] = p.tilePos();
@@ -1921,7 +1937,7 @@ function toggleTiny() {
     p.updHB();
     G.flash = 0.6; await wait(0.08); G.flash = 0;
     Particles.add(p.cx(), p.cy() - 4, 20, '#c0ffc0', 70, 0.6);
-    if (!S.flags.toldTiny && S.tiny) { S.flags.toldTiny = true; await say('小叶', ['变小啦！现在可以钻进很小的洞里了。', '想变回来的话，再站到发光的树桩上按 J 就好！'], LEAF_LOOK); }
+    if (!S.flags.toldTiny && S.tiny) { S.flags.toldTiny = true; await say('萤萤', ['哇，你变得和蚂蚁一样小啦！现在能钻进墙缝和小洞了。', '想变回来的话，再站到露珠上按 J 就好！'], LEAF_LOOK); }
   });
 }
 
@@ -1937,7 +1953,7 @@ function hurtPlayer(dmg, sx, sy, noKb) {
 function playerDie() {
   if (S.potions > 0) {
     S.potions--; S.hp = S.maxhp; Sfx.play('heal');
-    Particles.add(G.player.cx(), G.player.cy(), 30, '#ff80a0', 70, 0.8); toast('红药水救了你一命！');
+    Particles.add(G.player.cx(), G.player.cy(), 30, '#ff80a0', 70, 0.8); toast('蜂蜜滴救了你一命！');
     return;
   }
   G.dead = true;
@@ -1965,7 +1981,7 @@ const UI = {
   pop(o) { const i = G.ui.indexOf(o); if (i >= 0) G.ui.splice(i, 1); Input.clear(); },
   top() { return G.ui[G.ui.length - 1]; },
 };
-const LEAF_LOOK = { tpl: 'sprout', a: '#9ae070', d: '#3a9a2a' };
+const LEAF_LOOK = { tpl: 'bug', a: '#f8e060', d: '#806020' };
 function say(speaker, lines, look) { return new Promise(res => UI.push(new DialogUI(speaker, lines, look, res))); }
 function ask(q, options, speaker, look) { return new Promise(res => UI.push(new ChoiceUI(q, options, speaker, look, res))); }
 function bigMessage(title, sub, icon) { return new Promise(res => UI.push(new BigMsgUI(title, sub, icon, res))); }
@@ -2130,8 +2146,8 @@ class PauseUI {
     drawText(ctx, '心之碎片', hx, hy - 9, '#7a3a10', 10, 'left', false, true);
     for (let j = 0; j < 6; j++) for (let k = 0; k < 7; k++) { const c = HEART_PX[j][k]; if (c === '.') continue; const q = (k < 4 ? 0 : 1) + (j < 3 ? 0 : 2); ctx.fillStyle = c === 'k' ? '#2a1018' : q < S.pieces ? '#f03050' : '#c8b090'; ctx.fillRect(hx + k * 4, hy + 4 + j * 4, 4, 4); }
     drawText(ctx, S.pieces + ' / 4', hx + 34, hy + 10, '#3a2a1a', 10);
-    drawText(ctx, '光之果实 ' + S.fruits + ' / 4', hx, hy + 34, '#3a2a1a', 10);
-    drawText(ctx, '钱包上限 ' + S.wallet, hx, hy + 48, '#3a2a1a', 10);
+    drawText(ctx, '星星糖 ' + S.fruits + ' / 4', hx, hy + 34, '#3a2a1a', 10);
+    drawText(ctx, '纽扣上限 ' + S.wallet, hx, hy + 48, '#3a2a1a', 10);
     const mx = 252, my = 16;
     for (const k in WORLD_LAYOUT) {
       const [gx, gy] = WORLD_LAYOUT[k], x = mx + (gx - 1) * 18, y = my + gy * 14;
@@ -2152,8 +2168,8 @@ class PauseUI {
 }
 const HELP_TEXT = [
   '方向键 / WASD：移动    Shift / L：翻滚\nJ 或 空格：挥剑 · 对话 · 确定\n按住 J 再松开：回旋斩！',
-  'K：使用道具（回旋镖、炸弹、羽毛、弓）\nQ / E：切换道具\nI 或 Esc：菜单    M：静音    F：全屏',
-  '站在发光的树桩上按 J，就能变小或变大。\n变小以后能钻进很小的洞，发现藏起来的世界！',
+  'K：使用道具（瓶盖、爆米花、弹簧、弹弓）\nQ / E：切换道具\nI 或 Esc：菜单    M：静音    F：全屏',
+  '站在发光的露珠上按 J 喝一口，就能变得像蚂蚁一样小。\n再按一次变回来。变小以后能钻进墙缝和小洞！',
 ];
 
 // ============ 商店 ============
@@ -2161,9 +2177,9 @@ function openShop() { return new Promise(res => UI.push(new ShopUI(res))); }
 class ShopUI {
   constructor(res) { this.res = res; this.i = 0; }
   list() {
-    const l = [{ id: 'potion', name: '红药水', price: 60, ok: () => S.potions < 2, why: '最多只能带 2 瓶', give: () => S.potions++ }];
-    if (S.items.bombs) l.push({ id: 'bombs', name: '炸弹 ×5', price: 20, ok: () => S.bombs < S.maxBombs, why: '炸弹已经满了', give: () => S.bombs = Math.min(S.maxBombs, S.bombs + 5) });
-    if (S.items.bow) l.push({ id: 'arrow', name: '箭 ×10', price: 20, ok: () => S.arrows < S.maxArrows, why: '箭已经满了', give: () => S.arrows = Math.min(S.maxArrows, S.arrows + 10) });
+    const l = [{ id: 'potion', name: '蜂蜜滴', price: 60, ok: () => S.potions < 2, why: '最多只能带 2 瓶', give: () => S.potions++ }];
+    if (S.items.bombs) l.push({ id: 'bombs', name: '爆米花 ×5', price: 20, ok: () => S.bombs < S.maxBombs, why: '爆米花已经满了', give: () => S.bombs = Math.min(S.maxBombs, S.bombs + 5) });
+    if (S.items.bow) l.push({ id: 'arrow', name: '豆子 ×10', price: 20, ok: () => S.arrows < S.maxArrows, why: '豆子已经满了', give: () => S.arrows = Math.min(S.maxArrows, S.arrows + 10) });
     if (!S.flags.shopPiece) l.push({ id: 'heartp', name: '心之碎片', price: 150, ok: () => true, give: () => { S.flags.shopPiece = true; gainPiece(); } });
     l.push({ id: null, name: '离开' });
     return l;
@@ -2175,7 +2191,7 @@ class ShopUI {
     const it = l[this.i];
     if (!it.id) { UI.pop(this); this.res(); return; }
     if (!it.ok()) { toast(it.why); Sfx.play('cancel'); return; }
-    if (S.rupees < it.price) { toast(it.price > S.wallet ? '钱包太小了，装不下这么多宝石……' : '宝石不够！'); Sfx.play('cancel'); return; }
+    if (S.rupees < it.price) { toast(it.price > S.wallet ? '火柴盒太小了，装不下这么多纽扣……' : '纽扣不够！'); Sfx.play('cancel'); return; }
     S.rupees -= it.price; it.give(); Sfx.play('coin'); toast('买下了 ' + it.name);
     this.i = Math.min(this.i, this.list().length - 1);
   }
@@ -2183,7 +2199,7 @@ class ShopUI {
     ctx.fillStyle = 'rgba(0,0,0,0.4)'; ctx.fillRect(0, 0, VW, VH);
     const l = this.list(), W = 200, H = l.length * 22 + 34, X = (VW - W) / 2, Y = 14;
     drawBox(ctx, X, Y, W, H);
-    drawText(ctx, '商店', X + 12, Y + 8, '#7a3a10', 12, 'left', false, true);
+    drawText(ctx, '瓶盖杂货铺', X + 12, Y + 8, '#7a3a10', 12, 'left', false, true);
     ctx.drawImage(getIcon(ITEMS.rupee), X + W - 52, Y + 7, 12, 12); drawText(ctx, String(S.rupees), X + W - 12, Y + 8, '#3a2a1a', 11, 'right');
     l.forEach((it, i) => {
       const y = Y + 28 + i * 22, sel = i === this.i;
@@ -2224,9 +2240,9 @@ class TitleUI {
     const bob = Math.sin(this.t * 3) * 1.5;
     ctx.save(); ctx.translate(VW / 2 - 12, 124); ctx.scale(1.5, 1.5); drawChar(ctx, HERO_LOOK, 0, Math.floor(this.t * 3) % 2, 0, 0); ctx.restore();
     drawMonLook(ctx, LEAF_LOOK, VW / 2 + 10, 116 + bob, 0.75);
-    drawText(ctx, '星屿物语', VW / 2 + 2, 14, 'rgba(30,40,80,0.5)', 30, 'center', false, true);
-    drawText(ctx, '星屿物语', VW / 2, 12, '#fff8d0', 30, 'center', false, true);
-    drawText(ctx, '～ 小小勇者与守护古树 ～', VW / 2, 48, '#2a4a6a', 10, 'center');
+    drawText(ctx, '豆丁物语', VW / 2 + 2, 14, 'rgba(30,40,80,0.5)', 30, 'center', false, true);
+    drawText(ctx, '豆丁物语', VW / 2, 12, '#fff8d0', 30, 'center', false, true);
+    drawText(ctx, '～ 后院里的小小大冒险 ～', VW / 2, 48, '#2a4a6a', 10, 'center');
     const bw = 110, bh = this.opts.length * 17 + 10, bx = VW / 2 - bw / 2, by = 62;
     drawBox(ctx, bx, by, bw, bh);
     this.opts.forEach((o, i) => {
@@ -2241,7 +2257,7 @@ class CreditsUI {
   draw(ctx) {
     ctx.fillStyle = '#0a0818'; ctx.fillRect(0, 0, VW, VH);
     for (let i = 0; i < 60; i++) { ctx.fillStyle = 'rgba(255,255,255,' + Math.abs(Math.sin(this.t + i)) + ')'; ctx.fillRect(hash2(i, 5) * VW, hash2(i, 6) * VH, 1, 1); }
-    const lines = ['～ 星屿物语 ～', '', '四颗光之果实回到了守护古树。', '古树重新长出了绿叶，', '星露村又迎来了和平。', '', '谢谢你，小小的勇者！', '', '（按 J 继续 —— 还有没找到的心之碎片哦）'];
+    const lines = ['～ 豆丁物语 ～', '', '四颗星星糖回到了灯笼草上。', '豆丁村的夜晚又亮起了点点灯光，', '连地下室的老鼠们也分到了一盏小灯。', '', '谢谢你，小豆！', '', '（按 J 继续 —— 房子里还藏着心之碎片哦）'];
     const off = Math.max(0, 140 - this.t * 30);
     lines.forEach((l, i) => drawText(ctx, l, VW / 2, 20 + i * 16 + off, i === 0 ? '#ffe8a0' : '#fff', i === 0 ? 15 : 11, 'center', false, i === 0));
   }
@@ -2251,82 +2267,84 @@ class CreditsUI {
 <script>
 /* js/story.js */
 'use strict';
-// ============ NPC ============
+// =====================================================================
+//  剧情：豆丁村的小豆，去大人的房子里夺回星星糖
+// =====================================================================
+const FIREFLY = { tpl: 'bug', a: '#f8e060', d: '#806020' };
 const NPCS = {
-  granny: { name: '奶奶', map: 'home', x: 3, y: 5, wander: 1, look: { hair: '#d8d8d8', shirt: '#8a5a8a', pants: '#5a4a3a' },
+  granny: { name: '奶奶', map: 'home', x: 3, y: 5, wander: 1, look: { hair: '#e0e0e0', shirt: '#9a6aa0', pants: '#5a4a3a' },
     talk: async d => {
-      if (!S.flags.gotLeaf) return say(d.name, ['长老在村子广场的守护古树下等你呢，快去吧！', '出门以后往右走就是广场。'], d.look);
-      if (S.hp < S.maxhp) { S.hp = S.maxhp; Sfx.play('heal'); return say(d.name, ['哎呀，又受伤了？过来，奶奶给你包扎一下。', '（生命全部恢复了！）'], d.look); }
-      return say(d.name, [pick(['累了就回家歇歇，奶奶随时帮你治伤。', '床边的罐子里好像有零钱，拿去用吧，呵呵。', '你爷爷年轻的时候，也是个了不起的冒险家呢。'])], d.look);
+      if (!S.flags.gotLeaf) return say(d.name, ['小豆，村长在灯笼草那儿等你呢。', '出门往右走，就是村子中间的广场。'], d.look);
+      if (S.hp < S.maxhp) { S.hp = S.maxhp; Sfx.play('heal'); return say(d.name, ['哎哟，又被虫子咬了？来，奶奶给你抹点花粉膏。', '（生命全部恢复了！）'], d.look); }
+      return say(d.name, [pick(['累了就回家，奶奶随时帮你治伤。', '大人们的房子很大很大，千万别被他们发现哦。', '罐子里有几颗纽扣，拿去用吧。'])], d.look);
     } },
-  elder: { name: '长老', map: 'village', x: 21, y: 10, wander: 1, look: { hair: '#f0f0f0', shirt: '#4a6ab0', pants: '#4a3a2a', beard: '#f4f4f4' },
+  elder: { name: '村长', map: 'village', x: 21, y: 10, wander: 1, look: { hair: '#f0f0f0', shirt: '#5a8a4a', pants: '#4a3a2a', beard: '#f4f4f4' },
     talk: async d => {
       if (!S.flags.gotLeaf) return introScene(d);
-      if (!S.flags.gotSword) return say(d.name, ['先去道场找剑师吧，就在广场的东南边。'], d.look);
+      if (!S.flags.gotSword) return say(d.name, ['先去缝针道场找针婆婆吧，就在广场的东南边。'], d.look);
       return say(d.name, [hintFor()], d.look);
     } },
-  master: { name: '剑师', map: 'dojo', x: 6, y: 3, wander: 0, look: { hair: '#2a2a32', shirt: '#c83a3a', pants: '#2a2a32', beard: '#2a2a32' },
+  master: { name: '针婆婆', map: 'dojo', x: 6, y: 3, wander: 0, look: { hair: '#c8c8d0', shirt: '#c83a5a', pants: '#2a2a32' },
     talk: async d => {
-      if (!S.flags.gotLeaf) return say(d.name, ['今天是古树节，你不去广场看看吗？'], d.look);
+      if (!S.flags.gotLeaf) return say(d.name, ['今晚是灯笼节，你不去广场看看吗？'], d.look);
       if (!S.flags.gotSword) {
-        await say(d.name, ['长老都跟我说了。', '你要去对付暗影巫师？哈哈，好胆量！', '这把剑交给你了。'], d.look);
+        await say(d.name, ['村长都跟我说了。你要去大人的房子里找星星糖？', '好孩子，有胆量！这根缝衣针是我年轻时从大人的针线盒里拖回来的。', '现在它是你的剑了。'], d.look);
         S.flags.gotSword = true;
-        await bigMessage('得到了 勇气之剑！', '按 J 挥剑。', 'sword');
-        await say(d.name, ['再教你一招：按住 J 不放，等剑发光以后松开——', '这就是【回旋斩】！可以一口气砍倒周围所有的敌人。', '去北边的迷雾森林吧，第一座神殿就在那里。'], d.look);
+        await bigMessage('得到了 缝衣针！', '按 J 刺出去。', 'sword');
+        await say(d.name, ['再教你一招：按住 J 不放，等针尖发光了再松开——', '这就是【回旋斩】！被虫子围住的时候特别管用。', '还有，Shift 键可以翻滚，躲开攻击。', '先去北边的后院花园吧。大花盆里好像有老鼠的手下。'], d.look);
         return;
       }
-      return say(d.name, [pick(['按住 J 蓄力，松开放出回旋斩。被包围时特别好用！', '草丛和罐子里常常藏着宝石和心。', '敌人被回旋镖打中会晕一会儿，趁机砍它！', '有些头目身上有坚硬的护甲，得先用道具打破才行。'])], d.look);
+      return say(d.name, [pick(['按住 J 蓄力，松开放出回旋斩。', '草丛和罐子里常常能找到纽扣和心。', '虫子被瓶盖砸中会晕一会儿，趁机刺它！', '有些头目穿着硬壳盔甲，得先想办法打破才行。'])], d.look);
     } },
-  shopkeeper: { name: '店主', map: 'shop', x: 4, y: 2, wander: 0, look: { hair: '#e8a040', shirt: '#4a9a6a', pants: '#5a4a3a' },
-    talk: async d => { await say(d.name, ['欢迎光临！想买点什么？'], d.look); await openShop(); } },
-  wife: { name: '长老的妻子', map: 'elderhouse', x: 4, y: 5, wander: 1, look: { hair: '#c8c8c8', shirt: '#e0a0b0', pants: '#5a4a6a' },
-    talk: async d => say(d.name, ['老头子说的话我都听见了。', hintFor()], d.look) },
-  hu: { name: '小虎', map: 'village', x: 23, y: 12, wander: 3, look: { hair: '#2a2a2a', shirt: '#e8a030', pants: '#3a5a8a' },
-    talk: async d => say(d.name, [pick(['你知道吗？古树根下有个超级小的洞！要是能变成虫子那么小就好了……', '我听说世界上一共有 8 片心之碎片！集齐 4 片就能多一颗心。', '草丛里能砍出宝石！我天天在砍，嘿嘿。'])], d.look) },
-  mei: { name: '小美', map: 'village', x: 16, y: 21, wander: 3, look: { hair: '#e070a0', shirt: '#f0f0f0', pants: '#a0c8f0' },
-    talk: async d => say(d.name, [pick(['商店里卖红药水，倒下的时候会自动帮你恢复哦！', '我在村子周围看到过好几个会发光的树桩……', '道场的剑师可厉害了，他一剑能砍倒十根竹子！'])], d.look) },
-  fisher: { name: '渔夫', map: 'lake', x: 5, y: 9, wander: 1, look: { hair: '#3a3a3a', shirt: '#3a7ab0', pants: '#5a4a3a', hat: '#e8d090' },
+  shopkeeper: { name: '瓢瓢老板', map: 'shop', x: 4, y: 2, wander: 0, look: { hair: '#2a2a2a', shirt: '#e84040', pants: '#2a2a2a' },
+    talk: async d => { await say(d.name, ['欢迎光临瓶盖杂货铺！今天想要点什么？'], d.look); await openShop(); } },
+  wife: { name: '村长夫人', map: 'elderhouse', x: 4, y: 5, wander: 1, look: { hair: '#d8d8d8', shirt: '#e0a0b0', pants: '#5a4a6a' },
+    talk: async d => say(d.name, ['老头子说的我都听见了。', hintFor()], d.look) },
+  hu: { name: '小芽', map: 'village', x: 23, y: 12, wander: 3, look: { hair: '#4a8a3a', shirt: '#e8a030', pants: '#3a5a8a' },
+    talk: async d => say(d.name, [pick(['灯笼草根下有个特别小的洞！喝了露珠就能钻进去！', '听说一共有 8 片心之碎片，集齐 4 片就能多一颗心。', '我在大人的门廊上见过一只橘猫，有我们一千个那么大！'])], d.look) },
+  mei: { name: '小铃', map: 'village', x: 16, y: 21, wander: 3, look: { hair: '#e070a0', shirt: '#f0f0f0', pants: '#a0c8f0' },
+    talk: async d => say(d.name, [pick(['杂货铺有卖蜂蜜滴，倒下的时候会自动帮你回血哦！', '到处都有发光的露珠，喝一口就会变得和蚂蚁一样小。', '针婆婆可厉害了，她一针能挑起一颗豌豆！'])], d.look) },
+  fisher: { name: '水黾大叔', map: 'lake', x: 5, y: 9, wander: 1, look: { hair: '#3a3a3a', shirt: '#3a7ab0', pants: '#5a4a3a', hat: '#e8d090' },
     talk: async d => {
-      if (!S.flags.lakeBridge) return say(d.name, ['看到湖心岛边上那个蓝色的水晶了吗？', '以前只要打中它，桥就会从湖里升起来。', S.items.boomerang ? '你手里那个会飞回来的东西……站在岸边对准水晶扔过去试试？' : '可惜太远了，剑是够不着的……'], d.look);
-      return say(d.name, ['桥升起来了！你真厉害。岛上的神殿要小心啊。'], d.look);
+      if (!S.flags.lakeBridge) return say(d.name, ['看到地漏边上那颗蓝色按钮了吗？', '一按它，大人用剩的冰棍棒就会搭成桥。', S.items.boomerang ? '你那个会飞回来的瓶盖……站在这边对准按钮扔过去试试？' : '可惜太远了，针是够不着的……'], d.look);
+      return say(d.name, ['桥搭好了！地漏里黑乎乎的，可要小心啊。'], d.look);
     } },
-  traveler: { name: '旅人', map: 'field', x: 24, y: 9, wander: 1, look: { hair: '#8a5a2a', shirt: '#6a7a4a', pants: '#4a4a3a', hat: '#8a6a3a' },
-    talk: async d => say(d.name, [pick(['南边的大裂谷有两格宽，普通人可跳不过去。', '我在草原西北的树洞旁边，看到过一个发光的树桩。', '每个地方都有藏起来的小人世界，里面有宝贝！'])], d.look) },
-  miner: { name: '矿工', map: 'mountain', x: 21, y: 13, wander: 1, look: { hair: '#4a3a2a', shirt: '#c08030', pants: '#3a3a3a', hat: '#e0c040' },
-    talk: async d => say(d.name, [S.items.bombs ? '你有炸弹？那块有裂缝的巨石，一炸就开！' : '山洞口被有裂缝的巨石堵住了。要是有炸弹就好了……'], d.look) },
-  scholar: { name: '学者', map: 'ruins', x: 22, y: 12, wander: 1, look: { hair: '#6a6a7a', shirt: '#3a3a6a', pants: '#2a2a3a' },
-    talk: async d => say(d.name, [pick(['暗影之塔里到处都是机关之眼，据说要用弓箭射开。', '遗迹西边的石墙上也有一只眼睛……后面好像藏着什么。', '暗影巫师用黑暗的护盾保护自己，只有箭能射穿它。'])], d.look) },
+  traveler: { name: '蜗牛邮差', map: 'field', x: 24, y: 9, wander: 0, look: { hair: '#8a5a2a', shirt: '#6a7a4a', pants: '#4a4a3a', hat: '#8a6a3a' },
+    talk: async d => say(d.name, [pick(['南边那条木板缝有两格宽，得有弹簧才跳得过去。', '嘘——那只大橘猫在睡觉，别吵醒它。', '每个地方都藏着蚂蚁大小的小世界，里面有宝贝！'])], d.look) },
+  miner: { name: '蚂蚁工头', map: 'mountain', x: 21, y: 13, wander: 1, look: { hair: '#4a3a2a', shirt: '#c04030', pants: '#3a3a3a', hat: '#e0c040' },
+    talk: async d => say(d.name, [S.items.bombs ? '你有爆米花炸弹？那块卡住柜门的大饼干，一炸就开！' : '碗柜的门缝被一块大饼干卡住了，我们搬了三天都搬不动……'], d.look) },
+  scholar: { name: '书虫先生', map: 'ruins', x: 22, y: 12, wander: 1, look: { hair: '#6a6a7a', shirt: '#3a3a6a', pants: '#2a2a3a' },
+    talk: async d => say(d.name, [pick(['罐头城堡里到处都画着眼睛机关，得用弹弓打中才能开门。', '西边那堆书上也画着一只眼睛……后面好像藏着东西。', '老鼠大王穿着罐头盔甲，只有弹弓打得穿。'])], d.look) },
 };
 for (const k in NPCS) NPCS[k].id = k;
 function npcsForMap(id) { const out = []; for (const k in NPCS) { const d = NPCS[k]; if (d.map === id) out.push(new NPC(d, d.x * TS, d.y * TS - 4)); } return out; }
 
-// ============ 剧情 ============
 async function introScene(d) {
-  await say(d.name, ['你来啦！……你看，守护古树的叶子全都枯黄了。', '昨天夜里，暗影巫师偷走了古树的四颗【光之果实】，把它们藏进了四座神殿。', '没有光之果实，古树撑不了多久了……'], d.look);
+  await say(d.name, ['小豆，你来啦。……你看，灯笼草一点光都没有了。', '昨天夜里，老鼠大王带着手下闯进村子，把照亮全村的四颗【星星糖】全抢走了！', '它们跑进了大人的房子，把星星糖藏在了房子的各个角落……'], d.look);
   Sfx.play('secret'); G.flash = 0.6; await wait(0.1); G.flash = 0;
-  Particles.add(G.player.cx(), G.player.cy() - 20, 30, '#a0ffa0', 60, 1);
-  await say('？？？', ['……喂！喂！这里，这里！'], LEAF_LOOK);
-  await say('小叶', ['呼……终于找到一个能看见我的人了！我是古树的精灵，叫我小叶就好。', '暗影巫师太强了，大人们都打不过他。但是……也许一个小小的勇者可以！', '我把古树的魔力借给你：站在【发光的树桩】上按 J，你就能变得和我一样小！', '变小以后，可以钻进谁都注意不到的小洞，去别人去不了的地方。', '我会一直待在你的帽子上。我们一起把光之果实找回来吧！'], LEAF_LOOK);
+  Particles.add(G.player.cx(), G.player.cy() - 20, 30, '#fff080', 60, 1);
+  await say('？？？', ['喂——！这里这里！往上看！'], FIREFLY);
+  await say('萤萤', ['我是萤火虫萤萤！以前每天晚上帮星星糖照路的。', '没有星星糖，我的屁股都快不亮了……我要和你一起去！', '告诉你一个秘密：到处都有【发光的露珠】。站在露珠上按 J 喝一口，你就会变得和蚂蚁一样小！', '变小以后能钻进墙缝、钥匙孔、刺丛底下——大人们永远注意不到的地方。'], FIREFLY);
   S.flags.gotLeaf = true;
-  await bigMessage('得到了 小叶的祝福！', '站在发光的树桩上按 J，可以变小 / 变大。', 'fruit');
-  await say(d.name, ['孩子，这件事就拜托你了。', '先去道场找剑师，他会给你一把剑。道场就在广场的东南边。'], d.look);
+  await bigMessage('萤萤成为了你的伙伴！', '站在发光的露珠上按 J，就能变小 / 变回来。', 'fruit');
+  await say(d.name, ['好孩子，这件事就拜托你了。', '先去缝针道场找针婆婆，她会给你一件趁手的武器。道场就在广场东南边。'], d.look);
 }
 function hintFor() {
-  if (!S.flags.d1) return '第一颗光之果实在北边迷雾森林的神殿里。神殿被荆棘围着……听说荆棘下面有个小洞。';
-  if (!S.flags.d2) return '第二座神殿在镜湖的湖心岛上。镜湖在青草原的东边。';
-  if (!S.flags.d3) return '第三座神殿在岩石山道的山洞里，从青草原往北走就到了。';
-  if (!S.flags.d4) return '最后的暗影之塔在古代遗迹，要跳过青草原南边的大裂谷才能去。';
-  return '古树又活过来了！真是谢谢你。';
+  if (!S.flags.d1) return '第一颗星星糖被藏在北边后院花园的大花盆里。花盆被玫瑰刺丛围着……听说刺丛底下有个小洞。';
+  if (!S.flags.d2) return '第二颗在大人的浴室里，就在地漏深处。从木头门廊往东走就到了。';
+  if (!S.flags.d3) return '第三颗在厨房的碗柜里，从门廊往北走。柜门被一块大饼干卡住了。';
+  if (!S.flags.d4) return '最后一颗在地下室的罐头城堡，老鼠大王就在那里！要跳过门廊南边的木板缝才能去。';
+  return '灯笼草又亮起来了！真是谢谢你，小豆。';
 }
 function goalText() {
-  if (!S.flags.gotLeaf) return '出门往右，去村子广场的守护古树下找长老。';
-  if (!S.flags.gotSword) return '去村子东南边的剑术道场，找剑师拿剑。';
-  if (!S.flags.d1) return '去村子北边的迷雾森林，进入森林神殿。（荆棘下有小洞：先在发光树桩上变小！）';
-  if (!S.flags.d2) return '去青草原东边的镜湖，用回旋镖打中湖心岛上的水晶开关，进入湖底神殿。';
-  if (!S.flags.d3) return '去青草原北边的岩石山道，用炸弹炸开洞口的巨石，进入山之洞窟。';
-  if (!S.flags.d4) return '用跳跃羽毛跳过青草原南边的大裂谷，前往古代遗迹的暗影之塔，打倒暗影巫师！';
+  if (!S.flags.gotLeaf) return '出门往右，去村子中间的灯笼草下找村长。';
+  if (!S.flags.gotSword) return '去村子东南边的缝针道场，找针婆婆。';
+  if (!S.flags.d1) return '去北边的后院花园，进入大花盆。（刺丛底下有小洞：先在露珠上变小！）';
+  if (!S.flags.d2) return '去门廊东边的浴室，用瓶盖砸中地漏边的蓝色按钮，进入地漏深处。';
+  if (!S.flags.d3) return '去门廊北边的厨房，用爆米花炸弹炸开卡住柜门的饼干，进入碗柜迷宫。';
+  if (!S.flags.d4) return '用弹簧鞋跳过门廊南边的木板缝，去地下室的罐头城堡，打倒老鼠大王！';
   const left = 8 - (S.flags.piecesFound || 0);
-  return left > 0 ? `古树复活了！世界上还藏着 ${left} 片心之碎片，去找找看吧。` : '你找齐了所有的心之碎片！真正的勇者！';
+  return left > 0 ? `灯笼草亮起来了！还有 ${left} 片心之碎片藏在各个角落，去找找看吧。` : '你找齐了所有心之碎片！真正的豆丁勇者！';
 }
 
 // ============ 交互 ============
@@ -2360,7 +2378,7 @@ function talkTo(npc) {
 function tryUnlock(tx, ty, t) {
   const d = dngState(G.map.dng);
   if (t.lock === 'key') { if (d.keys > 0) { d.keys--; openDoorAt(tx, ty); } else toast('门锁着。需要一把小钥匙。'); }
-  else if (t.lock === 'boss') { if (d.bossKey) openDoorAt(tx, ty); else toast('一扇巨大的门。需要头目钥匙。'); }
+  else if (t.lock === 'boss') { if (d.bossKey) openDoorAt(tx, ty); else toast('一扇大门。需要大钥匙。'); }
 }
 
 // ============ 宝箱与奖励 ============
@@ -2377,31 +2395,30 @@ async function gainPiece() {
   if (S.pieces >= 4) { S.pieces = 0; S.maxhp += 2; S.hp = S.maxhp; await bigMessage('生命上限 +1！', '心之碎片合成了一颗完整的心。', 'heartc'); }
 }
 const ITEM_GET = {
-  boomerang: '按 K 扔出去，它会飞回来。\n能打晕敌人、打中远处的水晶开关！',
-  bombs: '按 K 放下炸弹。能炸开有裂缝的墙和岩石！\n（Q / E 切换道具）',
-  feather: '按 K 跳起来！可以跳过两格宽的深坑。',
-  bow: '按 K 射箭。射中机关之眼可以开门！',
+  boomerang: '按 K 扔出去，它会转一圈飞回来。\n能砸晕虫子、按到远处的按钮！',
+  bombs: '按 K 放下，过一会儿"嘭"地炸开。\n能炸开饼干墙和有裂缝的东西！（Q / E 切换道具）',
+  feather: '按 K 弹起来！可以跳过两格宽的缝。',
+  bow: '按 K 发射豆子。打中画着的眼睛机关就能开门！',
 };
 function openChestReward(spec) {
   runScript(async () => {
     Sfx.play('secret'); await wait(0.25);
     const it = spec.item;
     if (it === 'key') { dngState(G.map.dng).keys++; return bigMessage('得到了 小钥匙！', '可以打开一扇锁住的门。', 'key'); }
-    if (it === 'bosskey') { dngState(G.map.dng).bossKey = true; return bigMessage('得到了 头目钥匙！', '可以打开头目房间的大门。', 'bosskey'); }
+    if (it === 'bosskey') { dngState(G.map.dng).bossKey = true; return bigMessage('得到了 大钥匙！', '可以打开头目房间的大门。', 'bosskey'); }
     if (ITEM_GET[it]) {
       giveItem(it); S.equip = it;
       if (it === 'bombs') S.bombs = 10; if (it === 'bow') S.arrows = 30;
       await bigMessage('得到了 ' + ITEMS[it].name + '！', ITEM_GET[it], it);
-      return say('小叶', [it === 'boomerang' ? '太好了！刚才那扇蓝色的栅栏门，房间里应该有个水晶开关……用回旋镖打它试试！' : '新道具已经装备在 K 键上了。按 Q / E 可以切换哦。'], LEAF_LOOK);
+      return say('萤萤', [it === 'boomerang' ? '太好了！刚才那扇蓝色栅栏门……房间里应该有个按钮，用瓶盖砸它试试！' : '新道具已经装在 K 键上了。按 Q / E 可以切换哦。'], FIREFLY);
     }
     if (it === 'heartp') return gainPiece();
-    if (it === 'wallet') { S.wallet = S.wallet < 300 ? 300 : 999; return bigMessage('得到了 大钱包！', `现在最多可以装 ${S.wallet} 颗宝石。`, 'wallet'); }
-    if (it === 'rupee20') { addRupees(20); return bigMessage('得到了 红宝石！', '价值 20 颗绿宝石。', 'rupee20'); }
-    // 普通宝箱
+    if (it === 'wallet') { S.wallet = S.wallet < 300 ? 300 : 999; return bigMessage('得到了 大火柴盒！', `现在最多可以装 ${S.wallet} 颗纽扣。`, 'wallet'); }
+    if (it === 'rupee20') { addRupees(20); return bigMessage('得到了 红纽扣！', '值 20 颗绿纽扣。', 'rupee20'); }
     const r = Math.random();
-    if (r < 0.3 && S.items.bombs) { S.bombs = Math.min(S.maxBombs, S.bombs + 5); return bigMessage('得到了 炸弹 ×5！', null, 'bombs'); }
-    if (r < 0.55 && S.items.bow) { S.arrows = Math.min(S.maxArrows, S.arrows + 10); return bigMessage('得到了 箭 ×10！', null, 'arrow'); }
-    addRupees(20); return bigMessage('得到了 红宝石！', '价值 20 颗绿宝石。', 'rupee20');
+    if (r < 0.3 && S.items.bombs) { S.bombs = Math.min(S.maxBombs, S.bombs + 5); return bigMessage('得到了 爆米花 ×5！', null, 'bombs'); }
+    if (r < 0.55 && S.items.bow) { S.arrows = Math.min(S.maxArrows, S.arrows + 10); return bigMessage('得到了 豆子 ×10！', null, 'arrow'); }
+    addRupees(20); return bigMessage('得到了 红纽扣！', '值 20 颗绿纽扣。', 'rupee20');
   });
 }
 
@@ -2417,10 +2434,10 @@ function bossDefeated(b) {
     await wait(0.5);
     S.maxhp += 2; S.hp = S.maxhp;
     await bigMessage('得到了 心之容器！', '生命上限 +1', 'heartc');
-    await bigMessage(`找回了 光之果实！（${S.fruits} / 4）`, '果实里散发着温暖的光芒。', 'fruit');
+    await bigMessage(`找回了 星星糖！（${S.fruits} / 4）`, '亮晶晶的，还有一点甜甜的味道。', 'fruit');
     if (id === 'd4') return endingScene();
-    const next = { d1: '还剩三颗！下一颗在青草原东边的镜湖。湖心岛上的水晶开关……用回旋镖试试！', d2: '还剩两颗！有了炸弹，就能炸开岩石山道的巨石了。山道在青草原的北边。', d3: '只剩最后一颗了！用跳跃羽毛跳过青草原南边的大裂谷，暗影巫师就在古代遗迹里！' }[id];
-    await say('小叶', ['做得好！古树的力量又恢复了一点。', next], LEAF_LOOK);
+    const next = { d1: '还剩三颗！下一颗在浴室的地漏里。地漏边上有颗蓝色按钮……用瓶盖砸它！', d2: '还剩两颗！有了爆米花炸弹，就能炸开卡在厨房碗柜门缝里的饼干了。', d3: '只剩最后一颗了！穿上弹簧鞋跳过门廊南边的木板缝，老鼠大王就在地下室！' }[id];
+    await say('萤萤', ['好厉害！我的屁股又亮了一点！', next], FIREFLY);
     await fadeOut(0.6);
     S.tiny = false;
     loadMap(D.from.map, D.from.x * TS, D.from.y * TS - 4, 0);
@@ -2429,16 +2446,48 @@ function bossDefeated(b) {
 }
 async function endingScene() {
   const w = BOSS_KINDS.wizard;
-  await say(w.name, ['「不可能……被一个小不点打败了……」', '「古树的光……好刺眼……」'], w.look);
-  await say('小叶', ['我们做到了！四颗光之果实都找回来了！', '快回村子吧，古树在等着我们！'], LEAF_LOOK);
+  await say(w.name, ['「吱吱！不可能……被一颗豆子那么大的小不点打败了……」', '「我、我只是想让我的地下室也亮堂一点嘛……」'], w.look);
+  await say('萤萤', ['原来是这样……那以后，我们分一点灯光给你们好不好？', '小豆，我们回家吧！'], FIREFLY);
   await fadeOut(1);
   S.flags.ending = true; S.tiny = false;
   loadMap('village', 18 * TS, 9 * TS - 4, 1);
   await new Promise(res => UI.push(new CreditsUI(res)));
   await fadeIn(1);
-  await say(NPCS.elder.name, ['古树……重新长出新叶了！谢谢你，小小的勇者！'], NPCS.elder.look);
-  await say('小叶', ['冒险告一段落啦。不过世界上还有没找到的心之碎片哦！', '我会一直陪着你的。'], LEAF_LOOK);
+  await say(NPCS.elder.name, ['灯笼草……又亮起来了！谢谢你，小豆！'], NPCS.elder.look);
+  await say('萤萤', ['冒险告一段落啦。不过房子里还藏着没找到的心之碎片哦！', '我会一直陪着你的。'], FIREFLY);
   saveGame(true);
+}
+
+// ============ 门廊上的大橘猫 ============
+class BigCat extends Ent {
+  constructor(x, y) { super(x * TS, y * TS); this.solid = true; this.interact = true; this.hb = { x: 2, y: 10, w: 76, h: 30 }; }
+  onInteract() { runScript(async () => { await say(null, ['呼……噜……呼……噜……', '（一只像山一样大的橘猫在晒太阳睡觉。胡子随着呼吸一抖一抖的。）']); await say('萤萤', ['嘘——千万别吵醒它！被它看见我们就完蛋了！'], FIREFLY); }); return true; }
+  draw(ctx, cx, cy) {
+    const x = Math.round(this.x - cx), y = Math.round(this.y - cy), br = Math.sin(G.t * 1.6) * 1.5, O = PAL.outline;
+    ctx.fillStyle = 'rgba(0,0,0,0.25)'; ctx.beginPath(); ctx.ellipse(x + 40, y + 42, 42, 8, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = O; ctx.beginPath(); ctx.ellipse(x + 44, y + 28 - br / 2, 36 + br, 16 + br, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = '#f0a040'; ctx.beginPath(); ctx.ellipse(x + 44, y + 28 - br / 2, 34 + br, 14 + br, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = '#c87020'; for (let i = 0; i < 5; i++) ctx.fillRect(x + 26 + i * 9, y + 15 - br / 2, 4, 10);
+    ctx.fillStyle = '#ffe0b0'; ctx.beginPath(); ctx.ellipse(x + 44, y + 36, 24, 5, 0, 0, 7); ctx.fill();
+    // 尾巴
+    ctx.strokeStyle = O; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(x + 76, y + 30); ctx.quadraticCurveTo(x + 90, y + 40 + Math.sin(G.t) * 3, x + 74, y + 44); ctx.stroke();
+    ctx.strokeStyle = '#f0a040'; ctx.lineWidth = 5; ctx.stroke(); ctx.lineWidth = 1;
+    // 头
+    ctx.fillStyle = O; ctx.beginPath(); ctx.ellipse(x + 14, y + 28, 15, 13, 0, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(x + 2, y + 22); ctx.lineTo(x + 4, y + 8); ctx.lineTo(x + 13, y + 17); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(x + 16, y + 17); ctx.lineTo(x + 24, y + 8); ctx.lineTo(x + 27, y + 22); ctx.fill();
+    ctx.fillStyle = '#f0a040'; ctx.beginPath(); ctx.ellipse(x + 14, y + 28, 13, 11, 0, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(x + 4, y + 22); ctx.lineTo(x + 5, y + 11); ctx.lineTo(x + 12, y + 18); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(x + 17, y + 18); ctx.lineTo(x + 23, y + 11); ctx.lineTo(x + 25, y + 22); ctx.fill();
+    ctx.fillStyle = '#ffd0c0'; ctx.fillRect(x + 6, y + 15, 2, 4); ctx.fillRect(x + 21, y + 15, 2, 4);
+    ctx.fillStyle = O; ctx.fillRect(x + 6, y + 26, 5, 1); ctx.fillRect(x + 17, y + 26, 5, 1);
+    ctx.fillStyle = '#e07080'; ctx.fillRect(x + 13, y + 30, 2, 2);
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(x - 4, y + 31, 9, 1); ctx.fillRect(x + 24, y + 31, 9, 1);
+    // 打呼噜的 Z
+    const zt = (G.t * 0.7) % 1;
+    ctx.globalAlpha = 1 - zt; drawText(ctx, 'Z', x + 24 + zt * 10, y + 4 - zt * 14, '#ffffff', 8 + zt * 4, 'center', '#000', true); ctx.globalAlpha = 1;
+  }
+  sortY() { return this.y + 40; }
 }
 
 </script>
@@ -2538,8 +2587,9 @@ redef('BOULDER', (g) => { ell(g, 8, 15, 7, 1, 'rgba(0,0,0,0.25)'); ell(g, 8, 8, 
 redef('CRACK', (g) => { ell(g, 8, 15, 7, 1, 'rgba(0,0,0,0.25)'); ell(g, 8, 8, 8, 7, PAL.outline); ell(g, 8, 8, 7, 6, '#9a8a78'); ell(g, 7, 7, 5, 4, '#b4a490'); rect(g, 7, 2, 1, 4, '#2a1a10'); rect(g, 8, 5, 1, 4, '#2a1a10'); rect(g, 5, 9, 3, 1, '#2a1a10'); rect(g, 9, 9, 1, 4, '#2a1a10'); rect(g, 3, 6, 4, 1, '#2a1a10'); });
 redef('SIGNT', (g) => { ell(g, 8, 15, 5, 1, 'rgba(0,0,0,0.25)'); rect(g, 7, 9, 2, 6, '#5a3418'); rect(g, 1, 2, 14, 9, PAL.outline); rect(g, 2, 3, 12, 7, '#c88c50'); rect(g, 2, 3, 12, 1, '#e8b070'); rect(g, 4, 5, 8, 1, '#7a4a24'); rect(g, 4, 7, 6, 1, '#7a4a24'); });
 redef('STUMPP', (g, R, th, f) => {
-  ell(g, 8, 13, 7, 2, 'rgba(0,0,0,0.25)'); ell(g, 8, 10, 7, 5, PAL.outline); rect(g, 2, 9, 12, 4, '#7a4a22'); ell(g, 8, 8, 6, 3, '#b07840'); ell(g, 8, 8, 4, 2, '#d8a060'); ell(g, 8, 8, 2, 1, '#b07840');
-  const c = ['#7af07a', '#b0ffb0', '#e0ffe0'][f]; rect(g, 7, 3 - f, 2, 2, c); rect(g, 3, 6, 1, 1, c); rect(g, 12, 6, 1, 1, c); rect(g, 6, 12, 1, 1, c); rect(g, 10, 12, 1, 1, c);
+  ell(g, 8, 11, 7, 4, '#1e5a22'); ell(g, 8, 11, 6, 3, '#4caa3a'); rect(g, 3, 11, 10, 1, '#2e7a26'); ell(g, 6, 10, 2, 1, '#7ad05a');
+  ell(g, 8, 7, 4, 4, '#2a6ab8'); ell(g, 8, 7, 3, 3, ['#8ad0ff', '#a8e0ff', '#c8f0ff'][f]); rect(g, 6, 5, 2, 2, '#ffffff'); px1(g, 10, 9, '#ffffff');
+  const c = '#e0fff0'; if (f === 1) { px1(g, 2, 3, c); px1(g, 13, 4, c); } if (f === 2) { px1(g, 3, 6, c); px1(g, 12, 2, c); }
 });
 // 树：地面层只画阴影，树冠在排序层绘制
 redef('TREE', (g) => { ell(g, 8, 14, 8, 2, 'rgba(0,0,0,0.22)'); }, { over: 'tree' });
@@ -2601,7 +2651,7 @@ const ART = {
     if (k === 'path' || k === 'sand' || k === 'stone') {
       let mask = 0;
       for (let s = 0; s < 4; s++) { const [dx, dy] = [[0, -1], [1, 0], [0, 1], [-1, 0]][s]; if (groundKind(m, x + dx, y + dy) === 'grass') mask |= 1 << s; }
-      if (mask) { const v = (x * 7 + y * 3) & 3; ctx.drawImage(makeOverlay('gf' + mask + v, g => { for (let s = 0; s < 4; s++) if (mask & (1 << s)) grassFringe(g, s, v); }), px, py); }
+      if (mask && !ART.noFringe) { const v = (x * 7 + y * 3) & 3; ctx.drawImage(makeOverlay('gf' + mask + v, g => { for (let s = 0; s < 4; s++) if (mask & (1 << s)) grassFringe(g, s, v); }), px, py); }
     } else if (k === 'water') {
       let mask = 0;
       for (let s = 0; s < 4; s++) { const [dx, dy] = [[0, -1], [1, 0], [0, 1], [-1, 0]][s]; const nk = groundKind(m, x + dx, y + dy); if (nk !== 'water' && nk !== 'out' && nk !== 'other' && !TILES[tAt(m, x + dx, y + dy)].name.includes('BRIDGE')) mask |= 1 << s; }
@@ -2609,7 +2659,7 @@ const ART = {
     } else if (k === 'cliff') {
       const up = groundKind(m, x, y - 1), down = groundKind(m, x, y + 1), l = groundKind(m, x - 1, y), r = groundKind(m, x + 1, y);
       if (up !== 'cliff' && up !== 'out') {
-        const top = up === 'grass' ? PAL.grass : up === 'path' ? PAL.path : '#d4aa78';
+        const top = ART.lip || (up === 'grass' ? PAL.grass : up === 'path' ? PAL.path : '#d4aa78');
         ctx.fillStyle = top; ctx.fillRect(px, py, 16, 4);
         ctx.fillStyle = PAL.cliffDD; ctx.fillRect(px, py + 4, 16, 1);
         ctx.fillStyle = PAL.cliffL; ctx.fillRect(px, py + 5, 16, 1);
@@ -2815,6 +2865,155 @@ tinyCanvas = buildSprite(TINY_ROWS, { k: HERO_PAL.k, h: HERO_PAL.h, s: HERO_PAL.
 
 </script>
 <script>
+/* js/skin.js */
+'use strict';
+// =====================================================================
+//  场景皮肤：花园 / 木门廊 / 浴室 / 厨房 / 地下室（小人眼中的大人房子）
+// =====================================================================
+Object.assign(THEMES, {
+  garden: { skin: 'garden', floor: '#8a6a48', floor2: '#7a5a3a', wall: '#6a4a2a', wall2: '#4a3018', hi: '#8a6a4a', water: '#4aa0ec' },
+  porch: { skin: 'porch', floor: '#b8844e', floor2: '#9a6a3a', wall: '#7a4a24', wall2: '#5a3418', hi: '#d09a60', water: '#4aa0ec' },
+  bath: { skin: 'bath', floor: '#e4eef4', floor2: '#b8c8d4', wall: '#8aa8c0', wall2: '#6a88a0', hi: '#ffffff', water: '#5ab0f0' },
+  kitchen: { skin: 'kitchen', floor: '#f0e6cc', floor2: '#d8c8a8', wall: '#a06838', wall2: '#7a4a24', hi: '#c08850', water: '#4aa0ec' },
+  basement: { skin: 'basement', floor: '#6a5444', floor2: '#5a4434', wall: '#4a3a30', wall2: '#33281f', hi: '#7a6450', water: '#3a6ab8' },
+  pot: { floor: '#8a6448', floor2: '#76543a', wall: '#c8703e', wall2: '#8e4622', hi: '#e8946a', water: '#3d7cc4' },
+  wood: { floor: '#c49060', floor2: '#a87444', wall: '#7a4a24', wall2: '#5a3418', hi: '#9a6a3a', water: '#3d7cc4' },
+  junk: { floor: '#5a5466', floor2: '#4a4456', wall: '#7a7a88', wall2: '#4a4a58', hi: '#a8a8b8', water: '#3a6ab8' },
+});
+const skinOf = th => (th && th.skin) || 'garden';
+const SKIN = { porch: {}, bath: {}, kitchen: {}, basement: {}, garden: {} };
+
+// ---------- 门廊：木地板 ----------
+SKIN.porch.GRASS = (g, R) => {
+  fill(g, '#b8844e');
+  for (let y = 0; y < 16; y += 8) { rect(g, 0, y + 7, 16, 1, '#7a4e28'); rect(g, 0, y, 16, 1, '#d09a60'); }
+  for (let i = 0; i < 4; i++) rect(g, Math.floor(R() * 12), 1 + Math.floor(R() * 13), 3 + Math.floor(R() * 3), 1, '#a87444');
+  if (R() < 0.3) { px1(g, 2, 3, '#5a3a20'); px1(g, 2, 11, '#5a3a20'); }
+};
+SKIN.porch.PATH = (g, R) => { fill(g, '#c8a870'); for (let y = 0; y < 16; y += 2) for (let x = (y / 2) % 2; x < 16; x += 2) px1(g, x, y, '#b08e58'); rect(g, 0, 0, 16, 1, '#e0c890'); };
+SKIN.porch.TALL = (g, R) => { SKIN.porch.GRASS(g, mulberry32(4)); for (let i = 0; i < 6; i++) { const x = 1 + Math.floor(R() * 11), y = 3 + Math.floor(R() * 10), c = pick(['#d87a2a', '#c85a20', '#e8a040', '#a86030']); ell(g, x + 2, y, 3, 2, PAL.outline); ell(g, x + 2, y, 2, 1, c); px1(g, x + 2, y, shade(c, -0.3)); } };
+SKIN.porch.FLOWER = (g, R) => { SKIN.porch.GRASS(g, R); const x = 4 + Math.floor(R() * 8), y = 4 + Math.floor(R() * 8); ell(g, x, y, 2, 1, '#ff9ac0'); px1(g, x, y, '#ffffff'); };
+SKIN.porch.CHASM = (g) => { fill(g, '#140a04'); rect(g, 0, 0, 16, 3, '#9a6a3a'); rect(g, 0, 3, 16, 1, '#3a2010'); rect(g, 0, 13, 16, 3, '#2a1608'); };
+SKIN.porch.CLIFF = (g, R) => { fill(g, '#a86e3a'); for (let x = 0; x < 16; x += 5) rect(g, x, 0, 1, 16, '#6a4220'); rect(g, 0, 7, 16, 2, '#7a4a24'); speck(g, R, 4, '#c08850', 2, 1); };
+
+// ---------- 浴室：瓷砖与肥皂泡 ----------
+SKIN.bath.GRASS = (g, R) => { fill(g, '#e8f0f6'); rect(g, 0, 7, 16, 1, '#b8c8d4'); rect(g, 7, 0, 1, 16, '#b8c8d4'); rect(g, 15, 0, 1, 16, '#b8c8d4'); rect(g, 0, 15, 16, 1, '#b8c8d4'); px1(g, 1, 1, '#ffffff'); px1(g, 9, 9, '#ffffff'); if (R() < 0.2) px1(g, 3 + Math.floor(R() * 10), 3 + Math.floor(R() * 10), '#c8d8e4'); };
+SKIN.bath.SAND = (g, R) => { fill(g, '#9ac8e8'); for (let i = 0; i < 14; i++) px1(g, Math.floor(R() * 16), Math.floor(R() * 16), R() < 0.5 ? '#bce0f8' : '#7ab0d8'); };
+SKIN.bath.PATH = (g) => { fill(g, '#f8f0f4'); for (let y = 0; y < 16; y += 4) rect(g, 0, y, 16, 2, '#f0a0b8'); };
+SKIN.bath.WATER = (g, R, th, f) => { fill(g, '#62b4f0'); for (let i = 0; i < 3; i++) { const x = (Math.floor(R() * 12) + f * 2) % 13, y = 2 + i * 5; rect(g, x, y, 4, 1, '#a8daff'); } const bx = 3 + Math.floor(R() * 9), by = 3 + Math.floor(R() * 9); circ(g, bx, by, 2, '#e8f6ff'); circ(g, bx, by, 1, '#8ccaf8'); px1(g, bx - 1, by - 1, '#ffffff'); };
+SKIN.bath.TALL = (g, R) => { SKIN.bath.GRASS(g, mulberry32(3)); for (const [x, y, r] of [[5, 6, 3], [11, 5, 2], [9, 11, 3], [3, 12, 2]]) { circ(g, x, y, r, '#a0c8e8'); circ(g, x, y, r - 1, '#e8f6ff'); px1(g, x - 1, y - 1, '#ffffff'); if (r > 2) px1(g, x + 1, y + 1, '#f0b0e0'); } };
+SKIN.bath.FLOWER = (g, R) => { SKIN.bath.GRASS(g, R); const x = 4 + Math.floor(R() * 8), y = 4 + Math.floor(R() * 8); ell(g, x, y, 1, 2, '#62b4f0'); px1(g, x, y - 1, '#ffffff'); };
+SKIN.bath.BUSH = (g, R) => { ell(g, 8, 14, 6, 2, 'rgba(0,0,0,0.2)'); rect(g, 2, 4, 12, 10, PAL.outline); rect(g, 3, 5, 10, 8, '#f0d040'); rect(g, 3, 5, 10, 2, '#f8e880'); for (let i = 0; i < 8; i++) px1(g, 4 + Math.floor(R() * 8), 7 + Math.floor(R() * 5), '#c8a020'); };
+SKIN.bath.RUIN = (g) => { fill(g, '#b8c4d0'); rect(g, 0, 0, 16, 1, '#e8f0f8'); for (let x = 2; x < 16; x += 4) rect(g, x, 3, 2, 10, '#5a6878'); rect(g, 0, 15, 16, 1, '#6a7888'); };
+
+// ---------- 厨房：格子地砖、橱柜、方糖 ----------
+SKIN.kitchen.ROCKY = (g) => { fill(g, '#f2e8d0'); rect(g, 0, 0, 8, 8, '#dccaa4'); rect(g, 8, 8, 8, 8, '#dccaa4'); rect(g, 0, 0, 16, 1, '#c8b690'); rect(g, 0, 0, 1, 16, '#c8b690'); };
+SKIN.kitchen.PATH = (g) => { fill(g, '#c84a3a'); rect(g, 0, 2, 16, 1, '#f0c040'); rect(g, 0, 13, 16, 1, '#f0c040'); for (let x = 2; x < 16; x += 6) { rect(g, x, 6, 3, 3, '#f0c040'); px1(g, x + 1, 7, '#c84a3a'); } };
+SKIN.kitchen.CLIFF = (g, R) => { fill(g, '#a8703c'); rect(g, 1, 1, 14, 14, '#8a5a2c'); rect(g, 2, 2, 12, 12, '#b07a44'); rect(g, 2, 2, 12, 1, '#c89058'); rect(g, 12, 7, 1, 3, '#e8d8a0'); };
+SKIN.kitchen.BOULDER = (g) => { ell(g, 8, 15, 7, 1, 'rgba(0,0,0,0.2)'); rect(g, 2, 2, 12, 12, PAL.outline); rect(g, 3, 3, 10, 10, '#f8f8fc'); rect(g, 3, 3, 10, 3, '#ffffff'); rect(g, 10, 6, 3, 7, '#d8dce8'); for (const [x, y] of [[5, 8], [8, 10], [6, 11]]) px1(g, x, y, '#e0e4f0'); px1(g, 5, 4, '#c0e8ff'); };
+SKIN.kitchen.TALLD = (g, R) => { SKIN.kitchen.ROCKY(g, R); for (let i = 0; i < 5; i++) { const x = 2 + Math.floor(R() * 11), y = 3 + Math.floor(R() * 10); rect(g, x, y, 3, 2, PAL.outline); rect(g, x, y, 2, 1, '#e8b860'); px1(g, x + 1, y + 1, '#c08838'); } };
+SKIN.kitchen.CRACK = (g) => { ell(g, 8, 15, 7, 1, 'rgba(0,0,0,0.2)'); circ(g, 8, 8, 7, PAL.outline); circ(g, 8, 8, 6, '#d8a050'); circ(g, 7, 7, 4, '#e8b868'); for (const [x, y] of [[5, 5], [10, 6], [7, 10], [11, 10]]) rect(g, x, y, 2, 2, '#5a3018'); rect(g, 8, 2, 1, 5, '#6a3a18'); rect(g, 4, 8, 4, 1, '#6a3a18'); };
+SKIN.kitchen.SIGNT = null;
+
+// ---------- 地下室：旧地板、灰尘团、书堆、罐头城堡 ----------
+SKIN.basement.GRASS = (g, R) => { fill(g, '#6a5444'); for (let x = 0; x < 16; x += 8) { rect(g, x, 0, 1, 16, '#4a382c'); rect(g, x + 1, 0, 1, 16, '#806654'); } for (let i = 0; i < 3; i++) rect(g, 2 + Math.floor(R() * 12), Math.floor(R() * 14), 1, 3, '#5a4638'); };
+SKIN.basement.PATH = (g) => { fill(g, '#8a3a3a'); rect(g, 0, 0, 16, 2, '#c8a050'); rect(g, 0, 14, 16, 2, '#c8a050'); for (let x = 1; x < 16; x += 5) rect(g, x, 6, 3, 3, '#5a2020'); };
+SKIN.basement.STONE = (g) => { fill(g, '#7a6248'); rect(g, 0, 0, 16, 16, '#7a6248'); for (let i = 0; i < 16; i += 4) { rect(g, i, 0, 2, 16, '#86704f'); } rect(g, 0, 7, 16, 2, '#5a4836'); };
+SKIN.basement.TALL = (g, R) => { SKIN.basement.GRASS(g, mulberry32(2)); for (const [x, y] of [[5, 6], [11, 10], [4, 12]]) { circ(g, x, y, 3, '#8a8a92'); circ(g, x, y, 2, '#b4b4bc'); px1(g, x - 1, y - 1, '#d8d8e0'); px1(g, x + 2, y - 3, '#8a8a92'); px1(g, x - 3, y + 1, '#8a8a92'); } };
+SKIN.basement.FLOWER = (g, R) => { SKIN.basement.GRASS(g, R); px1(g, 4 + Math.floor(R() * 8), 4 + Math.floor(R() * 8), '#f0d040'); };
+SKIN.basement.RUIN = (g, R) => { fill(g, '#3a2a20'); const c = ['#c84a4a', '#4a7ac8', '#4aa060', '#d8a040', '#8a5ab0']; for (let y = 0; y < 16; y += 4) { rect(g, 0, y, 16, 3, c[Math.floor(R() * 5)]); rect(g, 0, y, 16, 1, '#f0e0c0'); rect(g, 2, y + 1, 3, 1, '#f8d870'); } };
+SKIN.basement.TOWER = (g, R) => { fill(g, '#8a8a98'); for (let x = 0; x < 16; x += 8) { rect(g, x, 0, 1, 16, '#5a5a68'); rect(g, x + 2, 0, 2, 16, '#c0c0cc'); } rect(g, 0, 5, 16, 1, '#5a5a68'); rect(g, 0, 11, 16, 1, '#5a5a68'); if (R() < 0.5) rect(g, 3 + Math.floor(R() * 8), 7, 3, 2, '#a85a2a'); };
+SKIN.basement.BUSH = (g) => { ell(g, 8, 14, 6, 2, 'rgba(0,0,0,0.25)'); circ(g, 8, 9, 6, PAL.outline); circ(g, 8, 9, 5, '#e8e4d8'); rect(g, 5, 7, 5, 1, '#b8b4a8'); rect(g, 7, 10, 4, 1, '#b8b4a8'); px1(g, 6, 6, '#ffffff'); };
+SKIN.basement.STATUE = (g) => { ell(g, 8, 15, 5, 1, 'rgba(0,0,0,0.3)'); rect(g, 4, 12, 8, 3, PAL.outline); rect(g, 5, 12, 6, 2, '#3a7a3a'); rect(g, 6, 5, 4, 7, '#3a7a3a'); circ(g, 8, 4, 2, '#3a7a3a'); rect(g, 5, 1, 6, 2, '#2a5a2a'); px1(g, 7, 6, '#6ab06a'); };
+
+// ---------- 花园：陶土花盆神殿 ----------
+SKIN.garden.RUIN = (g, R) => { fill(g, '#c8703e'); rect(g, 0, 0, 16, 2, '#e8946a'); rect(g, 0, 2, 16, 1, '#8e4622'); for (let i = 0; i < 3; i++) px1(g, Math.floor(R() * 16), 4 + Math.floor(R() * 11), '#a85a30'); rect(g, 0, 15, 16, 1, '#8e4622'); };
+
+// ---------- 包装：根据皮肤选择绘制 ----------
+for (const nm of ['GRASS', 'PATH', 'SAND', 'TALL', 'TALLD', 'FLOWER', 'CHASM', 'CLIFF', 'WATER', 'BUSH', 'BOULDER', 'CRACK', 'RUIN', 'TOWER', 'STONE', 'STATUE', 'ROCKY']) {
+  const t = TILES[TILE[nm]], orig = t.draw;
+  t.draw = function (g, R, th, f) { const fn = SKIN[skinOf(th)][nm]; if (fn) fn(g, R, th, f); else orig.call(this, g, R, th, f); };
+}
+for (const [bn, nm] of [['grass', 'GRASS'], ['path', 'PATH'], ['sand', 'SAND'], ['rocky', 'ROCKY'], ['stone', 'STONE']]) {
+  const orig = BASES[bn];
+  BASES[bn] = (g, R, th) => { const fn = th && SKIN[skinOf(th)][nm]; if (fn) fn(g, R, th); else orig(g, R, th); };
+}
+
+// ---------- 村子：蘑菇屋、瓶盖屋顶、叶子屋顶、罐头屋顶 ----------
+TILES[TILE.ROOF_R].draw = (g, R) => { fill(g, '#d84040'); rect(g, 0, 15, 16, 1, '#a02828'); for (let i = 0; i < 2; i++) { const x = 2 + Math.floor(R() * 10), y = 2 + Math.floor(R() * 9); circ(g, x, y, 2, '#fff4e8'); px1(g, x - 1, y - 1, '#ffffff'); } rect(g, 0, 0, 16, 1, '#f07060'); };
+TILES[TILE.ROOF_B].draw = (g) => { fill(g, '#4a78d0'); for (let x = 0; x < 16; x += 3) rect(g, x, 0, 1, 16, '#2e58a8'); rect(g, 0, 0, 16, 2, '#7aa8f0'); };
+TILES[TILE.ROOF_G].draw = (g, R) => { fill(g, '#4aa850'); for (let y = 0; y < 16; y += 5) for (let x = (y / 5 % 2) * 4; x < 16; x += 8) { ell(g, x + 4, y + 3, 4, 2, '#2e7a34'); ell(g, x + 4, y + 2, 3, 1, '#6ac860'); rect(g, x + 1, y + 3, 6, 1, '#3e9040'); } };
+TILES[TILE.ROOF_K].draw = (g) => { fill(g, '#a8acb8'); for (let x = 0; x < 16; x += 4) { rect(g, x, 0, 1, 16, '#7a7e8a'); rect(g, x + 1, 0, 1, 16, '#d0d4e0'); } };
+TILES[TILE.WALL].draw = (g) => { fill(g, '#f4ead4'); rect(g, 0, 0, 16, 2, 'rgba(0,0,0,0.12)'); for (let y = 4; y < 12; y += 4) rect(g, (y * 3) % 12, y, 3, 1, '#e0d0b0'); rect(g, 0, 13, 16, 3, '#c8b898'); rect(g, 0, 13, 16, 1, '#e0d4bc'); };
+
+// ---------- 高物体（遮挡主角）：三叶草、盆栽、洗发水瓶、玻璃瓶、纸箱 ----------
+const _origCanopy = ART.canopy.bind(ART);
+ART.canopy = function (kind, v, trunk) {
+  if (kind === 'tree' || kind === 'pine') return _origCanopy(kind, v, trunk);
+  const key = kind + v + (trunk ? 't' : '');
+  if (this.treeCache[key]) return this.treeCache[key];
+  const c = makeCanvas(32, 32), g = c.getContext('2d'), R = mulberry32(v * 131 + 7), O = PAL.outline;
+  if (kind === 'clover') {
+    if (trunk) { rect(g, 14, 18, 4, 13, O); rect(g, 15, 18, 2, 13, '#5aa848'); }
+    for (const [x, y] of [[10, 10], [22, 10], [16, 19]]) { circ(g, x - 2, y, 6, O); circ(g, x + 2, y, 6, O); }
+    for (const [x, y] of [[10, 10], [22, 10], [16, 19]]) { circ(g, x - 2, y, 5, '#3e9a3c'); circ(g, x + 2, y, 5, '#3e9a3c'); circ(g, x - 2, y - 1, 3, '#5cb848'); }
+    for (const [x, y] of [[10, 10], [22, 10], [16, 19]]) { rect(g, x, y - 4, 1, 8, '#2c7a30'); px1(g, x - 3, y - 2, '#8ade66'); ell(g, x, y, 3, 2, 'rgba(255,255,255,0.12)'); }
+    circ(g, 16, 14, 2, '#2c7a30');
+  } else if (kind === 'blades') {
+    for (const [x, h, w] of [[8, 26, 3], [13, 31, 4], [19, 28, 3], [24, 22, 3]]) { rect(g, x - 1, 31 - h, w + 2, h, O); rect(g, x, 32 - h, w, h - 1, '#4caa3a'); rect(g, x, 32 - h, 1, h - 1, '#7ad05a'); rect(g, x + w - 1, 32 - h, 1, h - 1, '#2e7a26'); }
+  } else if (kind === 'pot') {
+    rect(g, 8, 20, 16, 11, O); rect(g, 9, 21, 14, 9, '#c8703e'); rect(g, 7, 18, 18, 4, O); rect(g, 8, 19, 16, 2, '#e8946a'); rect(g, 9, 24, 3, 6, '#e08a5a');
+    for (const [x, y, r] of [[16, 9, 7], [10, 13, 5], [22, 13, 5]]) circ(g, x, y, r + 1, O);
+    for (const [x, y, r] of [[16, 9, 7], [10, 13, 5], [22, 13, 5]]) { circ(g, x, y, r, '#3e9a3c'); circ(g, x - 2, y - 2, Math.max(1, r - 3), '#6cc850'); }
+  } else if (kind === 'bottle') {
+    const col = ['#f070a0', '#60b0f0', '#f0c040'][v];
+    rect(g, 7, 6, 18, 25, O); rect(g, 8, 7, 16, 23, col); rect(g, 9, 8, 3, 21, shade(col, 0.4)); rect(g, 21, 8, 2, 21, shade(col, -0.25));
+    rect(g, 11, 14, 10, 8, '#ffffff'); rect(g, 12, 16, 8, 1, shade(col, -0.2)); rect(g, 12, 18, 6, 1, shade(col, -0.2));
+    rect(g, 11, 0, 10, 7, O); rect(g, 12, 1, 8, 5, '#f8f8f8'); rect(g, 12, 1, 8, 1, '#ffffff');
+  } else if (kind === 'jar') {
+    rect(g, 10, 3, 12, 28, O); rect(g, 11, 10, 10, 20, '#5a2a10'); rect(g, 12, 11, 2, 18, '#8a4a20'); rect(g, 13, 3, 6, 8, O); rect(g, 14, 4, 4, 6, '#5a2a10'); rect(g, 12, 1, 8, 3, '#e04040'); rect(g, 12, 16, 8, 7, '#f0e8d0'); rect(g, 13, 18, 6, 1, '#c84040');
+  } else if (kind === 'box') {
+    rect(g, 1, 6, 30, 25, O); rect(g, 2, 7, 28, 23, '#c8945a'); rect(g, 2, 7, 28, 6, '#dcaa70'); rect(g, 2, 13, 28, 1, '#9a6a38'); rect(g, 14, 7, 4, 6, '#e8d8a0'); rect(g, 24, 16, 4, 4, '#9a6a38'); rect(g, 4, 25, 8, 1, '#9a6a38');
+  }
+  this.treeCache[key] = c;
+  return c;
+};
+const OVER_KIND = { garden: { tree: 'clover', pine: 'blades' }, porch: { tree: 'pot', pine: 'pot' }, bath: { tree: 'bottle', pine: 'bottle' }, kitchen: { tree: 'jar', pine: 'jar' }, basement: { tree: 'box', pine: 'box' } };
+ART.tallList = function (m, x0, y0, x1, y1, cx, cy) {
+  const out = [], sk = skinOf(THEMES[m.theme]), map = OVER_KIND[sk] || OVER_KIND.garden;
+  for (let y = Math.max(0, y0); y <= Math.min(m.h - 1, y1 + 2); y++) for (let x = Math.max(0, x0 - 1); x <= Math.min(m.w - 1, x1 + 1); x++) {
+    const t = TILES[m.t[y * m.w + x]]; if (!t.over) continue;
+    const below = tAt(m, x, y + 1), trunk = below < 0 || !TILES[below].over;
+    const kind = map[t.over] || t.over;
+    const spr = this.canopy(kind, (x * 5 + y * 3) % 3, trunk);
+    out.push({ sortY: () => (y + 1) * TS - 1, draw: () => ctx.drawImage(spr, x * TS - cx - 8, y * TS - cy - 16) });
+  }
+  return out;
+};
+const _origOverlay = ART.overlay;
+ART.overlay = function (ctx, m, x, y, px, py) {
+  const sk = skinOf(THEMES[m.theme]);
+  ART.noFringe = sk !== 'garden';
+  ART.lip = sk === 'kitchen' ? '#f4f0e8' : sk === 'porch' ? '#d09a60' : null;
+  _origOverlay(ctx, m, x, y, px, py);
+};
+
+// ---------- 地下城装饰：橡皮鸭、茶杯、罐头、嫩芽 ----------
+THEMES.pot.deco = 'sprout'; THEMES.tide.deco = 'duck'; THEMES.wood.deco = 'cup'; THEMES.junk.deco = 'can';
+(() => {
+  const t = TILES[TILE.STATUE], orig = t.draw, O = PAL.outline;
+  t.draw = function (g, R, th, f) {
+    const d = th && th.deco;
+    if (d === 'duck') { ell(g, 8, 14, 6, 2, 'rgba(0,0,0,0.25)'); ell(g, 8, 11, 7, 4, O); ell(g, 8, 11, 6, 3, '#f8d838'); circ(g, 10, 6, 4, O); circ(g, 10, 6, 3, '#f8d838'); rect(g, 13, 6, 3, 2, '#f08020'); px1(g, 11, 5, O); rect(g, 4, 9, 4, 1, '#fff070'); }
+    else if (d === 'cup') { ell(g, 8, 14, 6, 2, 'rgba(0,0,0,0.25)'); rect(g, 2, 4, 11, 10, O); rect(g, 3, 5, 9, 8, '#f4f4f8'); rect(g, 3, 5, 9, 2, '#6a3a18'); rect(g, 12, 6, 3, 5, O); rect(g, 13, 7, 1, 3, '#f4f4f8'); rect(g, 4, 9, 7, 1, '#4a8ad0'); }
+    else if (d === 'can') { ell(g, 8, 14, 6, 2, 'rgba(0,0,0,0.3)'); rect(g, 3, 2, 10, 12, O); rect(g, 4, 3, 8, 10, '#b8bcc8'); rect(g, 4, 6, 8, 4, '#d84848'); rect(g, 5, 3, 2, 10, '#e0e4f0'); rect(g, 4, 3, 8, 1, '#8a8e9a'); }
+    else if (d === 'sprout') { ell(g, 8, 14, 5, 2, 'rgba(0,0,0,0.25)'); rect(g, 7, 6, 2, 9, '#3e8a30'); ell(g, 5, 5, 4, 2, O); ell(g, 11, 5, 4, 2, O); ell(g, 5, 5, 3, 1, '#6cc850'); ell(g, 11, 5, 3, 1, '#6cc850'); ell(g, 8, 14, 4, 1, '#6a4428'); }
+    else orig.call(this, g, R, th, f);
+  };
+})();
+
+</script>
+<script>
 /* js/main.js */
 'use strict';
 // ============ 游戏主体 ============
@@ -2850,7 +3049,7 @@ function startGame(state, isNew) {
   runScript(async () => {
     await fadeIn(0.8);
     if (isNew) {
-      await say(NPCS.granny.name, ['早上好！今天可是村子一年一度的古树节呀。', '不过……守护古树最近好像没什么精神。', '长老在广场等你，快去看看吧！出门往右就是广场。'], NPCS.granny.look);
+      await say(NPCS.granny.name, ['小豆，醒啦？外面出大事了！', '昨晚村子的灯笼全灭了，大家都聚在灯笼草那儿呢。', '村长在等你，快去看看吧！出门往右就是广场。'], NPCS.granny.look);
       toast('方向键移动，J 调查 / 对话');
     }
   });
@@ -2887,6 +3086,7 @@ function spawnMapEntities(m) {
   }
   for (const n of npcsForMap(m.id)) G.ents.push(n);
   for (const c of OW_CHESTS[m.id] || []) G.ents.push(new Chest(c));
+  if (m.id === 'field') G.ents.push(new BigCat(25, 4));
 }
 function edgeExit(side) {
   const m = G.map, ex = m.exits[side], p = G.player, tm = getMap(ex.to);
@@ -2905,14 +3105,14 @@ function useWarp(w) {
     runScript(async () => { Sfx.play('door'); await fadeOut(0.3); const m = getMap(w.to); loadMap(w.to, m.start.x * TS - 8, m.start.y * TS - 12, 1); await fadeIn(0.3); });
     return;
   }
-  if (S.tiny) { back(); toast('变小的样子进不去……先在发光的树桩上变回来吧。'); return; }
+  if (S.tiny) { back(); toast('变成蚂蚁那么小可进不去……先在露珠上变回来吧。'); return; }
   if (DUNGEONS[w.to]) {
-    if (!S.flags.gotSword) { back(); toast('里面很危险，先去拿一把剑吧。'); return; }
+    if (!S.flags.gotSword) { back(); toast('里面很危险，先去道场找针婆婆吧。'); return; }
     runScript(async () => {
       await fadeOut(0.4);
       const m = getMap(w.to); loadMap(w.to, m.start.x * TS - 8, m.start.y * TS - 12, 1);
       await fadeIn(0.4);
-      if (!dngState(w.to).entered) { dngState(w.to).entered = true; await say('小叶', [`这里就是${DUNGEONS[w.to].name}……光之果实就在最深处。`, '找到钥匙打开锁住的门，宝箱里会有新道具！'], LEAF_LOOK); }
+      if (!dngState(w.to).entered) { dngState(w.to).entered = true; await say('萤萤', [`这里就是${DUNGEONS[w.to].name}……星星糖的光就在最深处。`, '找到钥匙打开锁住的门，大宝箱里会有新道具！'], LEAF_LOOK); }
     });
     return;
   }
@@ -3055,7 +3255,7 @@ function renderWorld() {
   if (!G.locked() && G.state === 'play') {
     const tp = p.tileUnder();
     let hint = null;
-    if (tp && tp.shrink && p.z === 0 && S.flags.gotLeaf) hint = S.tiny ? 'J 变大' : 'J 变小';
+    if (tp && tp.shrink && p.z === 0 && S.flags.gotLeaf) hint = S.tiny ? 'J 变回来' : 'J 喝露珠';
     else if (findInteract(p)) hint = 'J';
     if (hint) { const w = textW(ctx, hint, 9, true) + 8, hx = Math.round(p.cx() - cx - w / 2), hy = Math.round(p.y - cy) + (p.small ? 0 : -8) - 8 + Math.sin(G.t * 5); drawBox(ctx, hx, hy, w, 12, 'dark'); drawText(ctx, hint, hx + w / 2, hy + 1.5, '#ffe060', 9, 'center', false, true); }
   }

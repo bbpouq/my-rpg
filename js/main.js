@@ -32,7 +32,7 @@ function startGame(state, isNew) {
   runScript(async () => {
     await fadeIn(0.8);
     if (isNew) {
-      await say(NPCS.granny.name, ['早上好！今天可是村子一年一度的古树节呀。', '不过……守护古树最近好像没什么精神。', '长老在广场等你，快去看看吧！出门往右就是广场。'], NPCS.granny.look);
+      await say(NPCS.granny.name, ['小豆，醒啦？外面出大事了！', '昨晚村子的灯笼全灭了，大家都聚在灯笼草那儿呢。', '村长在等你，快去看看吧！出门往右就是广场。'], NPCS.granny.look);
       toast('方向键移动，J 调查 / 对话');
     }
   });
@@ -69,6 +69,7 @@ function spawnMapEntities(m) {
   }
   for (const n of npcsForMap(m.id)) G.ents.push(n);
   for (const c of OW_CHESTS[m.id] || []) G.ents.push(new Chest(c));
+  if (m.id === 'field') G.ents.push(new BigCat(25, 4));
 }
 function edgeExit(side) {
   const m = G.map, ex = m.exits[side], p = G.player, tm = getMap(ex.to);
@@ -87,14 +88,14 @@ function useWarp(w) {
     runScript(async () => { Sfx.play('door'); await fadeOut(0.3); const m = getMap(w.to); loadMap(w.to, m.start.x * TS - 8, m.start.y * TS - 12, 1); await fadeIn(0.3); });
     return;
   }
-  if (S.tiny) { back(); toast('变小的样子进不去……先在发光的树桩上变回来吧。'); return; }
+  if (S.tiny) { back(); toast('变成蚂蚁那么小可进不去……先在露珠上变回来吧。'); return; }
   if (DUNGEONS[w.to]) {
-    if (!S.flags.gotSword) { back(); toast('里面很危险，先去拿一把剑吧。'); return; }
+    if (!S.flags.gotSword) { back(); toast('里面很危险，先去道场找针婆婆吧。'); return; }
     runScript(async () => {
       await fadeOut(0.4);
       const m = getMap(w.to); loadMap(w.to, m.start.x * TS - 8, m.start.y * TS - 12, 1);
       await fadeIn(0.4);
-      if (!dngState(w.to).entered) { dngState(w.to).entered = true; await say('小叶', [`这里就是${DUNGEONS[w.to].name}……光之果实就在最深处。`, '找到钥匙打开锁住的门，宝箱里会有新道具！'], LEAF_LOOK); }
+      if (!dngState(w.to).entered) { dngState(w.to).entered = true; await say('萤萤', [`这里就是${DUNGEONS[w.to].name}……星星糖的光就在最深处。`, '找到钥匙打开锁住的门，大宝箱里会有新道具！'], LEAF_LOOK); }
     });
     return;
   }
@@ -237,7 +238,7 @@ function renderWorld() {
   if (!G.locked() && G.state === 'play') {
     const tp = p.tileUnder();
     let hint = null;
-    if (tp && tp.shrink && p.z === 0 && S.flags.gotLeaf) hint = S.tiny ? 'J 变大' : 'J 变小';
+    if (tp && tp.shrink && p.z === 0 && S.flags.gotLeaf) hint = S.tiny ? 'J 变回来' : 'J 喝露珠';
     else if (findInteract(p)) hint = 'J';
     if (hint) { const w = textW(ctx, hint, 9, true) + 8, hx = Math.round(p.cx() - cx - w / 2), hy = Math.round(p.y - cy) + (p.small ? 0 : -8) - 8 + Math.sin(G.t * 5); drawBox(ctx, hx, hy, w, 12, 'dark'); drawText(ctx, hint, hx + w / 2, hy + 1.5, '#ffe060', 9, 'center', false, true); }
   }

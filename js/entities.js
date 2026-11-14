@@ -3,7 +3,7 @@
 const ENEMY_KINDS = {
   slime: { name: '史莱姆', look: { tpl: 'blob', a: '#7ad05a' }, hp: 2, dmg: 1, spd: 30, ai: 'hop' },
   slime2: { name: '蓝史莱姆', look: { tpl: 'blob', a: '#4a8af0' }, hp: 3, dmg: 1, spd: 36, ai: 'hop' },
-  bat: { name: '蝙蝠', look: { tpl: 'bat', a: '#6a4a8a' }, hp: 1, dmg: 1, spd: 55, ai: 'bat', fly: true },
+  bat: { name: '飞蛾', look: { tpl: 'bat', a: '#b0906a', r: '#f0e0a0' }, hp: 1, dmg: 1, spd: 55, ai: 'bat', fly: true },
   firebat: { name: '火焰蝙蝠', look: { tpl: 'bat', a: '#e0502a', r: '#ffd040' }, hp: 2, dmg: 2, spd: 62, ai: 'bat', fly: true },
   bat3: { name: '暗影蝙蝠', look: { tpl: 'bat', a: '#3a1a4a', r: '#f03a3a' }, hp: 3, dmg: 2, spd: 66, ai: 'bat', fly: true },
   skel: { name: '骷髅兵', look: { tpl: 'knight', a: '#e8e4d8', b: '#a8a498' }, hp: 3, dmg: 1, spd: 34, ai: 'chase' },
@@ -13,16 +13,20 @@ const ENEMY_KINDS = {
   octo2: { name: '喷火章鱼', look: { tpl: 'blob', a: '#e0602a', r: '#ffd040' }, hp: 3, dmg: 2, spd: 28, ai: 'shooter', shot: 'fire' },
   wisp: { name: '鬼火', look: { tpl: 'ghost', a: '#ff8a3a' }, hp: 3, dmg: 1, spd: 22, ai: 'wisp', fly: true, shot: 'fire' },
   wisp2: { name: '暗魂', look: { tpl: 'ghost', a: '#8a4ad0' }, hp: 4, dmg: 2, spd: 26, ai: 'wisp', fly: true, shot: 'shadow' },
-  knight: { name: '铁甲兵', look: { tpl: 'knight', a: '#8a8aa0', b: '#5a5a70' }, hp: 5, dmg: 2, spd: 30, ai: 'chase' },
+  knight: { name: '锡兵', look: { tpl: 'knight', a: '#d84848', b: '#a03030', c: '#f0d040' }, hp: 5, dmg: 2, spd: 30, ai: 'chase' },
+  rat: { name: '小老鼠', look: { tpl: 'mouse', a: '#8a8a98', d: '#f0a0b0' }, hp: 3, dmg: 1, spd: 50, ai: 'chase' },
+  roach: { name: '蟑螂', look: { tpl: 'bug', a: '#8a5a2a', d: '#3a2010' }, hp: 2, dmg: 1, spd: 60, ai: 'crab' },
+  fly: { name: '苍蝇', look: { tpl: 'bat', a: '#4a4a5a', r: '#e04040' }, hp: 1, dmg: 1, spd: 65, ai: 'bat', fly: true },
+  dust: { name: '灰尘精', look: { tpl: 'ghost', a: '#a8a8b0' }, hp: 3, dmg: 1, spd: 24, ai: 'wisp', fly: true, shot: 'rock' },
   ant: { name: '大蚂蚁', look: { tpl: 'bug', a: '#c03a2a', d: '#5a1a10' }, hp: 2, dmg: 1, spd: 40, ai: 'chase' },
   ladybug: { name: '瓢虫', look: { tpl: 'bug', a: '#e84040', d: '#1a1a1a' }, hp: 2, dmg: 1, spd: 30, ai: 'hop' },
   spider: { name: '蜘蛛', look: { tpl: 'crab', a: '#4a3a5a', d: '#2a1a3a' }, hp: 3, dmg: 1, spd: 48, ai: 'crab' },
 };
 const BOSS_KINDS = {
-  beetle: { name: '铁甲甲虫王', look: { tpl: 'bug', a: '#3a6a3a', d: '#1a3a1a', horn: '#d0d0d0' }, hp: 8, dmg: 1, weak: 'boomerang', pats: ['walk', 'charge', 'walk', 'summon'], minion: 'slime', shot: 'rock' },
-  crabking: { name: '岩壳巨蟹', look: { tpl: 'crab', a: '#4a6ad0', d: '#2a3a8a' }, hp: 10, dmg: 2, weak: 'bomb', pats: ['charge', 'bubbles', 'walk', 'seeds'], minion: 'crab', shot: 'bubble' },
-  lavagolem: { name: '熔岩魔像', look: { tpl: 'golem', a: '#a03a2a', c: '#ff9a40', d: '#2a1010' }, hp: 12, dmg: 2, weak: null, pats: ['walk', 'slam', 'seeds', 'slam', 'summon'], minion: 'firebat', shot: 'fire' },
-  wizard: { name: '暗影巫师', look: { tpl: 'spirit', a: '#3a2a5a', c: '#6a4a9a', d: '#1a0a2a', crown: true }, hp: 16, dmg: 2, weak: 'arrow', pats: ['teleport', 'ring', 'seeds', 'summon', 'teleport', 'slam'], minion: 'wisp2', shot: 'shadow' },
+  beetle: { name: '独角仙骑士', look: { tpl: 'bug', a: '#3a6a3a', d: '#1a3a1a', horn: '#d0d0d0' }, hp: 8, dmg: 1, weak: 'boomerang', pats: ['walk', 'charge', 'walk', 'summon'], minion: 'slime', shot: 'rock' },
+  crabking: { name: '蟑螂将军', look: { tpl: 'bug', a: '#8a5a2a', d: '#3a2010', horn: '#5a3a1a' }, hp: 10, dmg: 2, weak: 'bomb', pats: ['charge', 'bubbles', 'walk', 'seeds'], minion: 'roach', shot: 'bubble' },
+  lavagolem: { name: '发霉面包怪', look: { tpl: 'golem', a: '#c8a060', c: '#e8d8a0', d: '#4a7a3a' }, hp: 12, dmg: 2, weak: null, pats: ['walk', 'slam', 'seeds', 'slam', 'summon'], minion: 'fly', shot: 'rock' },
+  wizard: { name: '老鼠大王', look: { tpl: 'mouse', a: '#7a7a88', d: '#f0a0b0', c: '#c8c8d0', crown: true }, hp: 16, dmg: 2, weak: 'arrow', pats: ['teleport', 'ring', 'seeds', 'summon', 'teleport', 'slam'], minion: 'rat', shot: 'rock' },
 };
 const SHOT_COLOR = { rock: '#8a7a6a', fire: '#ff7020', shadow: '#a050f0', bubble: '#8ad0ff', wave: '#ffcf60' };
 
@@ -273,10 +277,11 @@ class Player extends Ent {
   }
   drawBlade(ctx, x, y, ang) {
     ctx.save(); ctx.translate(x, y); ctx.rotate(ang);
-    ctx.fillStyle = '#1c1420'; ctx.fillRect(1, -2, 6, 5); ctx.fillRect(5, -4, 3, 9); ctx.fillRect(7, -2, 13, 5); ctx.fillRect(20, -1, 1, 3);
-    ctx.fillStyle = '#6a3a18'; ctx.fillRect(2, -1, 4, 3); ctx.fillStyle = '#f0c040'; ctx.fillRect(6, -3, 1, 7);
     const glow = this.chargeFull && Math.floor(G.t * 16) % 2;
-    ctx.fillStyle = glow ? '#fff6a0' : '#c8d0e0'; ctx.fillRect(8, -1, 12, 3); ctx.fillStyle = glow ? '#ffffff' : '#ffffff'; ctx.fillRect(8, -1, 11, 1); ctx.fillStyle = '#8890a8'; ctx.fillRect(8, 1, 11, 1);
+    ctx.fillStyle = '#1c1420'; ctx.fillRect(1, -2, 21, 4); ctx.fillRect(22, -1, 2, 2);
+    ctx.fillStyle = glow ? '#fff6a0' : '#c8d0e0'; ctx.fillRect(2, -1, 20, 2); ctx.fillStyle = '#ffffff'; ctx.fillRect(4, -1, 17, 1);
+    ctx.fillStyle = '#1c1420'; ctx.fillRect(3, -1, 2, 1);
+    ctx.strokeStyle = '#e04848'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(3.5, -0.5); ctx.quadraticCurveTo(-3, 2 + Math.sin(G.t * 10) * 2, -6, -1); ctx.stroke();
     ctx.restore();
   }
   drawSword(ctx, x, y) {
@@ -442,7 +447,7 @@ class Boss extends Ent {
     if (this.armored) {
       if (src === this.k.weak) { this.armored = false; this.stun = 3.5; this.state = 'idle'; this.t = 0.5; Sfx.play('secret'); Particles.text(this.cx(), this.y, '弱点！', '#ffe060'); return; }
       Sfx.play('cancel'); Particles.text(this.cx(), this.y, '叮！', '#ccc');
-      if (src === 'sword' && !this.hinted) { this.hinted = true; toast({ boomerang: '剑砍不动！先用回旋镖打晕它！', bomb: '外壳太硬了！用炸弹炸开它！', arrow: '它用暗影护住了自己……用弓箭射它！' }[this.k.weak]); }
+      if (src === 'sword' && !this.hinted) { this.hinted = true; toast({ boomerang: '针刺不进去！先用瓶盖砸晕它！', bomb: '壳太硬了！用爆米花炸弹炸它！', arrow: '它躲在罐头盔甲里……用弹弓打它的眼睛！' }[this.k.weak]); }
       return;
     }
     if (src === 'boomerang') { this.stun = Math.max(this.stun, 1); return; }
@@ -480,7 +485,7 @@ class Proj extends Ent {
   }
   draw(ctx, cx, cy) {
     const x = this.x - cx, y = this.y - cy;
-    if (this.kind === 'arrow') { ctx.save(); ctx.translate(x, y); ctx.rotate(Math.atan2(this.vy, this.vx)); ctx.fillStyle = '#8a5a2a'; ctx.fillRect(-7, -0.5, 10, 1.5); ctx.fillStyle = '#d0d0d8'; ctx.fillRect(3, -1.5, 3, 3.5); ctx.fillStyle = '#e04848'; ctx.fillRect(-8, -1.5, 2, 3.5); ctx.restore(); return; }
+    if (this.kind === 'arrow') { ctx.fillStyle = PAL.outline; ctx.beginPath(); ctx.arc(x, y, 3.5, 0, 7); ctx.fill(); ctx.fillStyle = '#7ac850'; ctx.beginPath(); ctx.arc(x, y, 2.5, 0, 7); ctx.fill(); ctx.fillStyle = '#c8f0a0'; ctx.fillRect(x - 1.5, y - 1.5, 1, 1); return; }
     const c = SHOT_COLOR[this.kind] || '#fff';
     if (this.kind === 'wave') { ctx.fillStyle = c; ctx.fillRect(x - 4, y - 1, 8, 3); ctx.fillStyle = '#fff'; ctx.fillRect(x - 2, y - 1, 4, 1); return; }
     ctx.fillStyle = shade(c, -0.4); ctx.beginPath(); ctx.arc(x, y, 4, 0, 7); ctx.fill();
