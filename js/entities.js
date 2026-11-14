@@ -100,6 +100,16 @@ class Player extends Ent {
     if (this.spinT > 0) { this.spinT -= dt; this.swordHits(this.spinBox(), 2); }
     // 跳跃
     if (this.z > 0 || this.vz > 0) { this.vz -= 620 * dt; this.z = Math.max(0, this.z + this.vz * dt); if (this.z === 0) { this.vz = 0; Sfx.play('step'); } }
+    if (this.bufA > 0) { this.bufA -= dt; if (this.atkT <= 0 && this.spinT <= 0 && !locked) { this.bufA = 0; this.swing(); } }
+    if (this.rollT > 0) {
+      this.rollT -= dt;
+      const d = this.rollDir; moveBody(this, d[0] * 150 * dt, 0, 'player'); moveBody(this, 0, d[1] * 150 * dt, 'player');
+      if (Math.random() < 0.5) Particles.list.push({ x: this.cx() + rand(-4, 4), y: this.y + 15, vx: rand(-10, 10), vy: -8, life: 0.4, max: 0.4, color: 'rgba(230,215,180,0.9)', grav: 0, size: 3 });
+      if (this.rollT <= 0) this.rollCD = 0.15;
+      if (!locked) this.checkWarps();
+      return;
+    }
+    if (this.rollCD > 0) this.rollCD -= dt;
     if (this.kb) { moveBody(this, this.kb.x * dt, 0, 'player'); moveBody(this, 0, this.kb.y * dt, 'player'); this.kb.t -= dt; if (this.kb.t <= 0) this.kb = null; }
     // 蓄力回旋斩
     if (!locked && this.atkT <= 0 && this.spinT <= 0) {
@@ -128,7 +138,7 @@ class Player extends Ent {
       moveBody(this, dx / len * sp * dt, 0, 'player'); moveBody(this, 0, dy / len * sp * dt, 'player');
       const dist = Math.hypot(this.x - ox, this.y - oy);
       this.animT += dt * (dist > 0.1 ? 1 : 0.3);
-      if (this.animT > 0.15) { this.animT = 0; this.frame ^= 1; if (dist > 0.1 && this.frame === 0 && this.z === 0) Sfx.play('step'); }
+      if (this.animT > 0.12) { this.animT = 0; this.frame = (this.frame + 1) % 4; if (dist > 0.1 && (this.frame & 1) && this.z === 0) { Sfx.play('step'); if (!this.small) Particles.list.push({ x: this.cx() + rand(-3, 3), y: this.y + 15, vx: rand(-8, 8), vy: -6, life: 0.35, max: 0.35, color: 'rgba(230,215,180,0.9)', grav: 0, size: 3 }); } }
       if (dist < 0.05) this.tryPush(dx, dy, dt);
     } else { this.frame = 0; this.pushT = 0; }
     // 落坑 / 熔岩
@@ -187,6 +197,11 @@ class Player extends Ent {
   actions() {
     if (Input.hit('next')) cycleItem(1);
     if (Input.hit('prev')) cycleItem(-1);
+    if (Input.hit('roll') && !this.small && this.z === 0 && this.atkT <= 0 && this.spinT <= 0 && !(this.rollCD > 0)) {
+      let dx = (Input.held.right ? 1 : 0) - (Input.held.left ? 1 : 0), dy = (Input.held.down ? 1 : 0) - (Input.held.up ? 1 : 0);
+      if (!dx && !dy) [dx, dy] = DIRS[this.dir];
+      const l = Math.hypot(dx, dy); this.rollDir = [dx / l, dy / l]; this.rollT = 0.32; this.charging = false; Sfx.play('cut'); return;
+    }
     if (Input.hit('a')) {
       Input.consume('a');
       const t = this.tileUnder();
@@ -197,7 +212,8 @@ class Player extends Ent {
   }
   swing() {
     if (!S.flags.gotSword) return;
-    if (this.atkT > 0 || this.spinT > 0) return;
+    if (this.atkT > 0.06 || this.spinT > 0) { this.bufA = 0.2; return; }
+    if (this.atkT > 0) { this.bufA = 0.2; return; }
     this.atkT = 0.24; this.atkHit = new Set(); this.chargeReady = true; Sfx.play('swing');
   }
   swordBox() {
@@ -227,16 +243,20 @@ class Player extends Ent {
     let x = Math.round(this.x - cx), y = Math.round(this.y - cy);
     if (this.hurtT > 0 && Math.floor(this.hurtT * 20) % 2 === 0) return;
     if (this.small) {
-      ctx.fillStyle = 'rgba(0,0,0,0.25)'; ctx.fillRect(x + 5, y + 14, 6, 2);
-      const bob = this.moving && this.frame ? -1 : 0;
+      drawShadow(ctx, x + 8, y + 15, 3.5);
+      const bob = this.moving && (this.frame & 1) ? -1 : 0;
       ctx.drawImage(tinySprite(), x + 4, y + 6 + bob - this.z);
       if (Math.sin(G.t * 5) > 0.7) { ctx.fillStyle = '#c0ffc0'; ctx.fillRect(x + 8, y + 3 - this.z, 1, 1); }
       if (this.atkT > 0 || this.spinT > 0) { ctx.strokeStyle = 'rgba(255,255,255,0.7)'; ctx.beginPath(); ctx.arc(this.cx() - cx, this.cy() - cy, 8, 0, Math.PI * 2 * (this.spinT > 0 ? 1 - this.spinT / 0.35 : 1 - this.atkT / 0.24)); ctx.stroke(); }
       return;
     }
-    ctx.fillStyle = 'rgba(0,0,0,0.22)'; ctx.fillRect(x + 3 + Math.min(2, this.z / 6), y + 14, 10 - Math.min(4, this.z / 4), 2);
+    drawShadow(ctx, x + 8, y + 15, 6 - Math.min(3, this.z / 6));
     y -= Math.round(this.z);
-    const bob = this.moving && this.frame ? -1 : 0;
+    if (this.rollT > 0) {
+      const k = 1 - this.rollT / 0.32;
+      ctx.save(); ctx.translate(x + 8, y + 6); ctx.rotate(k * Math.PI * 2 * (this.rollDir[0] < 0 ? -1 : 1)); ctx.scale(0.9, 0.85); drawChar(ctx, this.look, this.dir, 0, -8, -6); ctx.restore();
+      return;
+    }
     if (this.spinT > 0) {
       const k = 1 - this.spinT / 0.35; const dirs = [0, 3, 1, 2]; const d = dirs[Math.floor(k * 4) % 4];
       drawChar(ctx, this.look, d, 0, x, y);
@@ -247,14 +267,16 @@ class Player extends Ent {
     }
     const showSword = this.atkT > 0 || this.charging;
     if (showSword && this.dir === 1) this.drawSword(ctx, x, y);
-    drawChar(ctx, this.look, this.dir, this.frame, x, y + bob);
+    drawChar(ctx, this.look, this.dir, this.moving ? this.frame : 0, x, y);
     if (showSword && this.dir !== 1) this.drawSword(ctx, x, y);
     if (this.toolT > G.t && this.toolItem) { const ic = getIcon(ITEMS[this.toolItem]); const d = DIRS[this.dir]; ctx.drawImage(ic, x + 4 + d[0] * 10, y + 2 + d[1] * 8, 10, 10); }
   }
   drawBlade(ctx, x, y, ang) {
     ctx.save(); ctx.translate(x, y); ctx.rotate(ang);
-    ctx.fillStyle = '#5a3a1a'; ctx.fillRect(2, -1, 4, 3); ctx.fillStyle = '#d8b040'; ctx.fillRect(5, -3, 2, 7);
-    ctx.fillStyle = this.chargeFull && Math.floor(G.t * 16) % 2 ? '#fff6a0' : '#e8e8f4'; ctx.fillRect(7, -1, 11, 3); ctx.fillStyle = '#fff'; ctx.fillRect(7, -1, 11, 1);
+    ctx.fillStyle = '#1c1420'; ctx.fillRect(1, -2, 6, 5); ctx.fillRect(5, -4, 3, 9); ctx.fillRect(7, -2, 13, 5); ctx.fillRect(20, -1, 1, 3);
+    ctx.fillStyle = '#6a3a18'; ctx.fillRect(2, -1, 4, 3); ctx.fillStyle = '#f0c040'; ctx.fillRect(6, -3, 1, 7);
+    const glow = this.chargeFull && Math.floor(G.t * 16) % 2;
+    ctx.fillStyle = glow ? '#fff6a0' : '#c8d0e0'; ctx.fillRect(8, -1, 12, 3); ctx.fillStyle = glow ? '#ffffff' : '#ffffff'; ctx.fillRect(8, -1, 11, 1); ctx.fillStyle = '#8890a8'; ctx.fillRect(8, 1, 11, 1);
     ctx.restore();
   }
   drawSword(ctx, x, y) {
@@ -263,8 +285,9 @@ class Player extends Ent {
     const t = 1 - this.atkT / 0.24;
     const ang = base + (-1.1 + t * 2.2) * (this.dir === 2 ? -1 : 1);
     this.drawBlade(ctx, x + 8, y + 10, ang);
-    ctx.strokeStyle = 'rgba(255,255,255,' + (0.6 * (1 - t)) + ')'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(x + 8, y + 10, 16, base - 1.1, base - 1.1 + t * 2.2); ctx.stroke(); ctx.lineWidth = 1;
+    const s0 = base - 1.1 * (this.dir === 2 ? -1 : 1), s1 = ang, ccw = this.dir === 2;
+    ctx.fillStyle = `rgba(255,255,240,${0.75 * (1 - t * 0.7)})`;
+    ctx.beginPath(); ctx.arc(x + 8, y + 10, 21, s0, s1, ccw); ctx.arc(x + 8, y + 10, 11, s1, s0, !ccw); ctx.closePath(); ctx.fill();
   }
 }
 
@@ -275,7 +298,7 @@ class NPC extends Ent {
     if (G.locked() || !this.def.wander || this.talking) return;
     if (this.mv) {
       const d = DIRS[this.mv.d]; const ok = moveBody(this, d[0] * 28 * dt, d[1] * 28 * dt, 'npc');
-      this.mv.t -= dt; this.animT = (this.animT || 0) + dt; if (this.animT > 0.2) { this.animT = 0; this.frame ^= 1; }
+      this.mv.t -= dt; this.animT = (this.animT || 0) + dt; if (this.animT > 0.15) { this.animT = 0; this.frame = (this.frame + 1) % 4; }
       if (this.mv.t <= 0 || !ok) { this.mv = null; this.frame = 0; }
       return;
     }
@@ -343,7 +366,7 @@ class Enemy extends Ent {
   hit(dmg, sx, sy, src) {
     if (this.spawnT > 0) return;
     if (src === 'boomerang') { this.stun = 2.5; Sfx.play('hit'); if (this.maxhp > 1) return; }
-    this.hp -= dmg; this.flash = 0.2;
+    this.hp -= dmg; this.flash = 0.2; if (src === 'sword') { G.hitStop = Math.max(G.hitStop || 0, 0.05); G.shake = Math.max(G.shake, 0.06); Particles.add((this.cx() + sx) / 2, (this.cy() + sy) / 2, 6, '#fff8c0', 70, 0.2); }
     const a = Math.atan2(this.cy() - sy, this.cx() - sx);
     this.kb = { x: Math.cos(a) * 170, y: Math.sin(a) * 170, t: 0.14 };
     Sfx.play('hit'); Particles.add(this.cx(), this.cy(), 5, '#fff', 50, 0.3);
@@ -423,7 +446,7 @@ class Boss extends Ent {
       return;
     }
     if (src === 'boomerang') { this.stun = Math.max(this.stun, 1); return; }
-    this.hp -= dmg; this.flash = 0.25; Sfx.play('hit'); Particles.add(this.cx(), this.cy(), 8, '#fff', 60, 0.4);
+    this.hp -= dmg; this.flash = 0.25; G.hitStop = 0.08; G.shake = 0.12; Sfx.play('hit'); Particles.add(this.cx(), this.cy(), 8, '#fff', 60, 0.4);
     if (this.hp <= 0) { this.dead = true; bossDefeated(this); }
   }
   draw(ctx, cx, cy) {

@@ -171,6 +171,7 @@ function update(dt) {
     if (!top) {
       if (Input.hit('menu') && !G.locked()) UI.push(new PauseUI());
       else {
+        if (G.hitStop > 0) { G.hitStop -= dt; updateCamera(false, dt); if (top) top.update(dt); return; }
         if (G.warpCD > 0) G.warpCD -= dt;
         S.playTime += dt;
         G.player.update(dt);
@@ -212,7 +213,8 @@ function renderWorld() {
     const i = y * m.w + x, id = m.t[i], t = TILES[id];
     if (id === 0) continue;
     ctx.drawImage(getTileSprite(id, (hash2(x, y) * 4) | 0, t.anim ? (f3 + ((x + y) % 3)) % 3 : 0, m.theme, m.under[i]), x * TS - cx, y * TS - cy);
-    if (t.water) {
+    ART.overlay(ctx, m, x, y, x * TS - cx, y * TS - cy);
+    if (false) {
       const px = x * TS - cx, py = y * TS - cy;
       const nb = (dx, dy) => { const n = tAt(m, x + dx, y + dy); return n > 0 && !TILES[n].water && !TILES[n].name.includes('BRIDGE'); };
       ctx.fillStyle = 'rgba(255,255,255,0.35)';
@@ -222,6 +224,7 @@ function renderWorld() {
   const p = G.player, list = [];
   for (const e of G.ents) { if (e.dead) continue; if (m.isDungeon && e.room && e.room !== G.curRoomKey) continue; list.push(e); }
   list.push(p);
+  for (const o of ART.tallList(m, x0, y0, x1, y1, cx, cy)) list.push(o);
   list.sort((a, b) => a.sortY() - b.sortY());
   for (const e of list) {
     if (e === p && p.fallScale != null) { ctx.save(); ctx.translate(p.x - cx + 8, p.y - cy + 12); ctx.scale(p.fallScale, p.fallScale); ctx.translate(-8, -12); if (p.small) ctx.drawImage(tinySprite(), 4, 6); else drawChar(ctx, p.look, p.dir, 0, 0, 0); ctx.restore(); continue; }

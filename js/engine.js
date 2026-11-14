@@ -51,7 +51,7 @@ const Input = {
     KeyJ: 'a', Space: 'a', KeyZ: 'a', Enter: 'a', NumpadEnter: 'a',
     KeyK: 'b', KeyX: 'b', Backspace: 'b',
     KeyI: 'menu', Tab: 'menu', Escape: 'menu',
-    KeyQ: 'prev', KeyE: 'next', KeyM: 'mute', KeyF: 'full',
+    KeyQ: 'prev', KeyE: 'next', ShiftLeft: 'roll', ShiftRight: 'roll', KeyL: 'roll', KeyC: 'roll', KeyM: 'mute', KeyF: 'full',
     Digit1: 's0', Digit2: 's1', Digit3: 's2', Digit4: 's3', Digit5: 's4', Digit6: 's5', Digit7: 's6', Digit8: 's7', Digit9: 's8', Digit0: 's9',
   },
   init() {
