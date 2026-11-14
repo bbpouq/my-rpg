@@ -1,478 +1,190 @@
 'use strict';
-// ============ 剧情与 NPC ============
-const LETTER_TEXT = [
-  '亲爱的孩子：\n当你读到这封信时，爷爷大概已经去了很远的地方旅行了。',
-  '这座农场是我一生的骄傲，现在它属于你了。好好照顾这片土地，它会回报你的。',
-  '还有一件事……星露岛的四颗元素水晶被暗影封印了。岛上的灵兽们越来越不安。',
-  '箱子里那把木剑，是我年轻时冒险用的。去晨星村找村长王伯吧，他会告诉你该怎么做。',
-  '—— 永远爱你的爷爷',
-];
-const SHOP_HOURS = { store: [8, 20], smith: [8, 18] };
-function friend(id) { return S.friends[id] = S.friends[id] || { pts: 0, talked: false, gifted: false, ev: {} }; }
-function hearts(id) { return Math.floor(friend(id).pts / 100); }
-function starterCounter() { return { sprig: 'ember', ember: 'bubbo', bubbo: 'sprig' }[S.flags.starter] || 'ember'; }
-function evoLine(id, lv) { let sp = id; while (SPECIES[sp].evo && lv >= SPECIES[sp].evo[0]) sp = SPECIES[sp].evo[1]; return sp; }
-function makeTeam(list) { return list.map(([sp, lv]) => { const m = makeMon(evoLine(sp, lv), lv); return m; }); }
-function giveMon(mon, silent) {
-  S.dex.seen[mon.sp] = 1; S.dex.caught[mon.sp] = 1;
-  if (S.party.length < 6) { S.party.push(mon); return 'party'; }
-  S.box.push(mon); return 'box';
-}
-
+// ============ NPC ============
 const NPCS = {
-  elder: { name: '王伯', look: { hair: '#e8e8e8', shirt: '#6a4aa0', pants: '#4a3a2a', beard: '#f4f4f4' },
-    sched: [[0, 'elderhouse', 5, 5, 0, 1], [10, 'village', 18, 15, 0, 2], [17, 'elderhouse', 5, 5, 0, 1]],
-    gifts: { love: ['pumpkin', 'cauli', 'salmon', 'tuna', 'melon'], like: ['potato', 'parsnip', 'bread', 'mushroom', 'corn'], hate: ['gel', 'bone', 'stone', 'wingm'] },
-    hearts: { 4: async d => { await say(d.name, ['孩子，你让我想起了你爷爷年轻的时候。', '这是他当年留在我这里的东西，现在交给你吧。'], d.look); S.maxhp += 2; S.hp = S.maxhp; await bigMessage('获得了 心之容器！', '生命上限 +1', 'heart'); },
-      8: async d => { await say(d.name, ['这颗大师球是村里代代相传的宝物。', '我相信你会在真正需要的时候使用它。'], d.look); addItem('masterball', 1); await bigMessage('获得了 大师球！', '必定能收服任何灵兽', 'ball'); } },
-    talk: async (npc) => {
-      const d = npc.def;
-      if (!S.flags.metElder) {
-        await say(d.name, [`哦！你就是老星的孙辈吧？我是晨星村的村长，叫我王伯就好。`, `你爷爷的事……我都听说了。他把农场托付给你，一定是相信你。`, `最近岛上不太平。古老的元素水晶被一股暗影力量封印了，野外的魔物越来越多。`, `一个人去野外太危险了。去村子北边的灵兽研究所找林博士吧，他会给你一只灵兽伙伴。`, `这点钱你先拿着，买些种子和道具。`], d.look);
-        S.flags.metElder = true; S.gold += 500; Sfx.play('coin'); toast('获得了 500G');
+  granny: { name: '奶奶', map: 'home', x: 3, y: 5, wander: 1, look: { hair: '#d8d8d8', shirt: '#8a5a8a', pants: '#5a4a3a' },
+    talk: async d => {
+      if (!S.flags.gotLeaf) return say(d.name, ['长老在村子广场的守护古树下等你呢，快去吧！', '出门以后往右走就是广场。'], d.look);
+      if (S.hp < S.maxhp) { S.hp = S.maxhp; Sfx.play('heal'); return say(d.name, ['哎呀，又受伤了？过来，奶奶给你包扎一下。', '（生命全部恢复了！）'], d.look); }
+      return say(d.name, [pick(['累了就回家歇歇，奶奶随时帮你治伤。', '床边的罐子里好像有零钱，拿去用吧，呵呵。', '你爷爷年轻的时候，也是个了不起的冒险家呢。'])], d.look);
+    } },
+  elder: { name: '长老', map: 'village', x: 21, y: 10, wander: 1, look: { hair: '#f0f0f0', shirt: '#4a6ab0', pants: '#4a3a2a', beard: '#f4f4f4' },
+    talk: async d => {
+      if (!S.flags.gotLeaf) return introScene(d);
+      if (!S.flags.gotSword) return say(d.name, ['先去道场找剑师吧，就在广场的东南边。'], d.look);
+      return say(d.name, [hintFor()], d.look);
+    } },
+  master: { name: '剑师', map: 'dojo', x: 6, y: 3, wander: 0, look: { hair: '#2a2a32', shirt: '#c83a3a', pants: '#2a2a32', beard: '#2a2a32' },
+    talk: async d => {
+      if (!S.flags.gotLeaf) return say(d.name, ['今天是古树节，你不去广场看看吗？'], d.look);
+      if (!S.flags.gotSword) {
+        await say(d.name, ['长老都跟我说了。', '你要去对付暗影巫师？哈哈，好胆量！', '这把剑交给你了。'], d.look);
+        S.flags.gotSword = true;
+        await bigMessage('得到了 勇气之剑！', '按 J 挥剑。', 'sword');
+        await say(d.name, ['再教你一招：按住 J 不放，等剑发光以后松开——', '这就是【回旋斩】！可以一口气砍倒周围所有的敌人。', '去北边的迷雾森林吧，第一座神殿就在那里。'], d.look);
         return;
       }
-      if (!S.flags.gotStarter) { await say(d.name, ['灵兽研究所就在村子北边，屋顶是绿色的那栋。林博士在等你呢。'], d.look); return; }
-      if (!S.flags.d1 && !S.flags.toldD1) {
-        S.flags.toldD1 = true;
-        await say(d.name, ['很好，你和灵兽相处得不错嘛。', '听好了：星露岛有四颗元素水晶——森、潮、炎、冰。它们守护着岛上的平衡。', '如今暗影之塔在北方的雪原上升起，水晶都被封印在了各地的神殿里。', '第一座是【森林神殿】，就在你家农场北边的迷雾森林深处。', '神殿里有很多机关和魔物。拿好你爷爷的剑，用J键挥剑，K键使用道具。', '对了，农场的活儿也别落下。种地能赚钱，钱能买到更好的道具！'], d.look);
-        return;
-      }
-      const hints = {
-        d1: '森林神殿就在迷雾森林的最深处。小心里面的机关！',
-        d2: '据说珊瑚海滩的潮汐洞窟被一只"封印之眼"守护着。你拿到的弓箭应该能派上用场。',
-        d3: '你学会游泳了？那就能渡过村子北边的河了！河对岸的赤焰山上有一座熔岩矿坑。',
-        d4: '赤焰山北边的巨石挡住了去霜雪高原的路。用炸弹试试吧！冰晶神殿就在高原上。',
-        d5: '暗影之塔的入口被寒冰封住了……火焰杖能融化它。最后的决战就靠你了！',
-      };
-      for (const k of ['d1', 'd2', 'd3', 'd4', 'd5']) if (!S.flags[k]) { await say(d.name, [hints[k]], d.look); return; }
-      await say(d.name, [pick(['多亏了你，星露岛又恢复了和平。你爷爷一定会为你骄傲的。', '听说矿洞的最深处，有一种叫"星灵"的传说灵兽……', '今年的收成怎么样？要是种出了大南瓜，记得给我看看！'])], d.look);
+      return say(d.name, [pick(['按住 J 蓄力，松开放出回旋斩。被包围时特别好用！', '草丛和罐子里常常藏着宝石和心。', '敌人被回旋镖打中会晕一会儿，趁机砍它！', '有些头目身上有坚硬的护甲，得先用道具打破才行。'])], d.look);
     } },
-  lin: { name: '林博士', look: { hair: '#9a9aa0', shirt: '#f4f4f4', pants: '#4a4a6a' },
-    sched: [[0, 'lab', 7, 6, 0, 2]],
-    gifts: { love: ['starshard', 'diamond', 'emerald', 'ruby'], like: ['quartz', 'amethyst', 'topaz', 'crystalfruit'], hate: ['gel', 'wood'] },
-    hearts: { 4: async d => { await say(d.name, ['你对灵兽研究的帮助太大了！这些是我改良过的灵球。'], d.look); addItem('ultraball', 5); toastItem('ultraball', 5); },
-      8: async d => { await say(d.name, ['我研究出了一种神奇的果实……能让人精力充沛！'], d.look); S.maxEnergy += 30; S.energy = S.maxEnergy; await bigMessage('体力上限 +30！', null, 'star'); } },
-    talk: async (npc) => {
-      const d = npc.def;
-      if (!S.flags.gotStarter) { await starterScene(npc); return; }
-      const c = Object.keys(S.dex.caught).length;
-      const rw = [[5, 'greatball', 5], [12, 'superpotion', 5], [20, 'ultraball', 5], [30, 'revive', 5], [40, 'maxpotion', 5], [50, 'masterball', 1]];
-      S.flags.dexRw = S.flags.dexRw || 0;
-      let line = `让我看看你的图鉴……已经收服了 ${c} 种灵兽！`;
-      const lines = [line];
-      while (S.flags.dexRw < rw.length && c >= rw[S.flags.dexRw][0]) {
-        const [n, it, k] = rw[S.flags.dexRw];
-        lines.push(`达成 ${n} 种的奖励：请收下 ${ITEMS[it].name} ×${k}！`); addItem(it, k); S.flags.dexRw++;
-      }
-      if (S.flags.dexRw < rw.length) lines.push(`收服 ${rw[S.flags.dexRw][0]} 种的时候再来找我，我有奖励给你。`);
-      lines.push(pick(['不同属性之间有克制关系，比如水克火、火克草、草克水。', '灵兽的体力越低，就越容易收服。让它睡着或麻痹也有帮助！', '队伍里没出场的灵兽也能获得一半的经验值。', '有些灵兽只在夜里或特定的地方出现哦。', '矿洞深处有很多稀有的灵兽，越往下等级越高。']));
-      await say(d.name, lines, d.look);
+  shopkeeper: { name: '店主', map: 'shop', x: 4, y: 2, wander: 0, look: { hair: '#e8a040', shirt: '#4a9a6a', pants: '#5a4a3a' },
+    talk: async d => { await say(d.name, ['欢迎光临！想买点什么？'], d.look); await openShop(); } },
+  wife: { name: '长老的妻子', map: 'elderhouse', x: 4, y: 5, wander: 1, look: { hair: '#c8c8c8', shirt: '#e0a0b0', pants: '#5a4a6a' },
+    talk: async d => say(d.name, ['老头子说的话我都听见了。', hintFor()], d.look) },
+  hu: { name: '小虎', map: 'village', x: 23, y: 12, wander: 3, look: { hair: '#2a2a2a', shirt: '#e8a030', pants: '#3a5a8a' },
+    talk: async d => say(d.name, [pick(['你知道吗？古树根下有个超级小的洞！要是能变成虫子那么小就好了……', '我听说世界上一共有 8 片心之碎片！集齐 4 片就能多一颗心。', '草丛里能砍出宝石！我天天在砍，嘿嘿。'])], d.look) },
+  mei: { name: '小美', map: 'village', x: 16, y: 21, wander: 3, look: { hair: '#e070a0', shirt: '#f0f0f0', pants: '#a0c8f0' },
+    talk: async d => say(d.name, [pick(['商店里卖红药水，倒下的时候会自动帮你恢复哦！', '我在村子周围看到过好几个会发光的树桩……', '道场的剑师可厉害了，他一剑能砍倒十根竹子！'])], d.look) },
+  fisher: { name: '渔夫', map: 'lake', x: 5, y: 9, wander: 1, look: { hair: '#3a3a3a', shirt: '#3a7ab0', pants: '#5a4a3a', hat: '#e8d090' },
+    talk: async d => {
+      if (!S.flags.lakeBridge) return say(d.name, ['看到湖心岛边上那个蓝色的水晶了吗？', '以前只要打中它，桥就会从湖里升起来。', S.items.boomerang ? '你手里那个会飞回来的东西……站在岸边对准水晶扔过去试试？' : '可惜太远了，剑是够不着的……'], d.look);
+      return say(d.name, ['桥升起来了！你真厉害。岛上的神殿要小心啊。'], d.look);
     } },
-  lily: { name: '莉莉', look: { hair: '#e8a040', shirt: '#e86a8a', pants: '#5a4a8a' },
-    sched: [[0, 'store', 5, 3, 0, 0]],
-    gifts: { love: ['strawberry', 'dandelion', 'fireflower', 'coral', 'melon'], like: ['blueberry', 'wildberry', 'shell', 'cranberry', 'snowberry'], hate: ['bone', 'gel', 'stone'] },
-    hearts: { 3: async d => { await say(d.name, ['这是从远方商人那里进的稀有种子，送给你！据说能卖很高的价钱。'], d.look); addItem('starfruit_s', 5); toastItem('starfruit_s', 5); },
-      6: async d => { await say(d.name, ['你总来照顾我的生意，这个送你，种地会轻松很多哦！'], d.look); addItem('qsprinkler', 4); toastItem('qsprinkler', 4); } },
-    talk: async (npc) => {
-      const d = npc.def;
-      const c = await ask(pick(['欢迎光临莉莉杂货店！', '今天想买点什么？', '新鲜的种子刚到货哦！']), ['买东西', '聊天', '离开'], d.name, d.look);
-      if (c === 0) await openShop('莉莉杂货店', storeStock());
-      else if (c === 1) await chat(npc, ['每个季节能种的作物都不一样，换季的时候别忘了买新种子！', '把作物放进农场的出货箱，第二天就能拿到钱，很方便吧？', '草莓是我的最爱！', '洒水器可以自动浇水，用铜矿和铁矿就能做。', '下雨天不用浇水，作物会自己喝饱的～']);
-    } },
-  bear: { name: '大熊', look: { hair: '#3a2a1a', shirt: '#8a4a2a', pants: '#3a3a3a', beard: '#3a2a1a' },
-    sched: [[0, 'smith', 4, 3, 0, 0]],
-    gifts: { love: ['gold', 'mythril', 'ruby', 'diamond'], like: ['iron', 'copper', 'bread', 'topaz'], hate: ['dandelion', 'herb', 'shell'] },
-    hearts: { 3: async d => { await say(d.name, ['哈哈，你小子不错！这些矿石送你，拿去升级装备吧！'], d.look); addItem('iron', 10); toastItem('iron', 10); },
-      7: async d => { await say(d.name, ['这可是我珍藏的秘银，只有真正的勇者才配用它！'], d.look); addItem('mythril', 5); addItem('gold', 5); toastItem('mythril', 5); } },
-    talk: async (npc) => {
-      const d = npc.def;
-      const c = await ask('铁匠铺！要升级装备还是买矿石？', ['升级装备', '购买矿石', '聊天', '离开'], d.name, d.look);
-      if (c === 0) await openSmith();
-      else if (c === 1) { const st = ['copper', 'iron', 'wood', 'stone']; if (S.flags.d3) st.push('gold'); await openShop('大熊铁匠铺', st); }
-      else if (c === 2) await chat(npc, ['矿洞里的矿石越往深处越好。铜→铁→金→秘银！', '镐子等级不够的话，有些矿石是敲不动的。', '剑越好，打怪越轻松。别舍不得钱！', '我年轻时也和你爷爷一起冒过险，那家伙剑术可厉害了。']);
-    } },
-  mei: { name: '美玲', look: { hair: '#e070a0', shirt: '#ffffff', pants: '#e070a0' },
-    sched: [[0, 'clinic', 6, 3, 0, 0]],
-    gifts: { love: ['crystalfruit', 'strawberry', 'blueberry', 'snowberry'], like: ['wildberry', 'herb', 'potion', 'cranberry'], hate: ['bone', 'wingm', 'stone'] },
-    hearts: { 4: async d => { await say(d.name, ['谢谢你一直这么关心大家。这些药你带着，冒险的时候用得上。'], d.look); addItem('maxpotion', 3); addItem('revive', 3); toastItem('revive', 3); },
-      8: async d => { await say(d.name, ['这是……我用灵兽之力做的护身符。希望它能保护你。'], d.look); S.maxhp += 2; S.hp = S.maxhp; await bigMessage('获得了 心之容器！', '生命上限 +1', 'heart'); } },
-    talk: async (npc) => {
-      const d = npc.def;
-      const c = await ask('欢迎来到灵兽中心！要让灵兽们休息一下吗？', ['恢复灵兽', '聊天', '离开'], d.name, d.look);
-      if (c === 0) {
-        await say(d.name, ['好的，请把灵兽交给我。'], d.look);
-        Sfx.play('heal'); await wait(1.2); healParty();
-        await say(d.name, ['让你久等了！你的灵兽都恢复了精神。欢迎再来！'], d.look);
-      } else if (c === 1) await chat(npc, ['旁边的电脑可以寄存灵兽，队伍最多带6只。', '灵兽中毒的话，回合结束时会掉血。用万能药可以治好。', '灵兽全部倒下的话会被送回这里，还会丢掉一些钱，要小心哦。']);
-    } },
-  xue: { name: '小雪', look: { hair: '#3a3a5a', shirt: '#a0c8f0', pants: '#f0f0f8' },
-    sched: [[0, 'xuehouse', 5, 4, 0, 1], [9, 'village', 25, 20, 0, 3], [13, 'meadow', 22, 9, 0, 2], [16, 'village', 26, 15, 0, 2], [20, 'xuehouse', 5, 4, 0, 1]],
-    gifts: { love: ['dandelion', 'strawberry', 'coral', 'crystalfruit', 'starfruit'], like: ['shell', 'fireflower', 'blueberry', 'bread'], hate: ['bone', 'gel', 'wingm'] },
-    hearts: { 4: async d => { await say(d.name, ['那个……这是我在海边捡到的，一直觉得很特别。', '送给你！要好好收着哦。'], d.look); S.maxhp += 2; S.hp = S.maxhp; await bigMessage('获得了 心之容器！', '生命上限 +1', 'heart'); },
-      8: async d => { await say(d.name, ['我学会做仙露了！喝了以后会浑身是劲哦！', '……以后，也要常来找我玩呀。'], d.look); addItem('elixir', 3); S.maxEnergy += 40; S.energy = S.maxEnergy; await bigMessage('体力上限 +40！', '还获得了 仙露×3', 'potion'); } },
-    talk: async (npc) => chat(npc, ['你好呀！今天天气真好～', '我最喜欢在草原上看灵兽们玩耍了。', '你知道吗？晚上的森林里会有萤火虫灵兽出现，可漂亮了！', '海边能捡到很漂亮的贝壳和珊瑚哦。', '我有点怕暗影之塔……你一定要小心。']) },
-  jie: { name: '阿杰', look: { hair: '#c8502a', shirt: '#3a3a5a', pants: '#2a2a32' },
-    where: () => {
-      if (!S.flags.gotStarter) return ['lab', 9, 6, 2, 0];
-      return ['village', 30, 13, 2, 2];
-    },
-    gifts: { love: ['bread', 'tuna', 'ruby'], like: ['potato', 'corn', 'bass'], hate: ['dandelion', 'shell'] },
-    talk: async (npc) => {
-      const d = npc.def;
-      const stages = [['d1', 'rv2', [['chirp', 12], [starterCounter(), 14]], 800], ['d3', 'rv3', [['swifty', 27], ['zapper', 28], ['pebble', 27], [starterCounter(), 30]], 2500], ['d4', 'rv4', [['skyhawk', 38], ['thundra', 39], ['boulderon', 39], ['vampbat', 38], [starterCounter(), 42]], 5000]];
-      for (const [need, flag, team, rw] of stages) {
-        if (S.flags[need] && !S.flags[flag]) {
-          await say(d.name, ['嘿！听说你又打败了一个神殿的头目？', '别得意！我也一直在变强！来比一场吧！'], d.look);
-          const r = await startBattle({ trainer: { name: '劲敌 阿杰', team: makeTeam(team), reward: rw, loseLine: '可恶……下次一定赢你！' } });
-          if (r === 'win') { S.flags[flag] = true; await say(d.name, ['……你真的很强。我会继续修炼的！'], d.look); }
-          return;
-        }
-      }
-      if (S.flags.d5) {
-        if (S.flags.rvDay !== S.year * 1000 + S.season * 100 + S.day) {
-          const c = await ask('喂！要不要来一场巅峰对决？', ['来吧！', '下次吧'], d.name, d.look);
-          if (c === 0) { const r = await startBattle({ trainer: { name: '劲敌 阿杰', team: makeTeam([['skyhawk', 58], ['thundra', 58], ['boulderon', 58], ['nightmare', 58], ['heavendr', 60], [starterCounter(), 62]]), reward: 8000, loseLine: '哈哈，痛快！明天再来！', boss: true } }); if (r === 'win') S.flags.rvDay = S.year * 1000 + S.season * 100 + S.day; }
-          return;
-        }
-      }
-      await chat(npc, ['我要成为星露岛最强的灵兽训练家！', '竞技场的冠军可厉害了，我还没赢过他。', '你的灵兽状态不错嘛。', '别以为你赢了一次就能一直赢！']);
-    } },
-  hai: { name: '阿海', look: { hair: '#2a2a2a', shirt: '#3a7ab0', pants: '#5a4a3a', hat: '#e8d090' },
-    sched: [[0, 'fisherhut', 5, 5, 0, 0], [7, 'beach', 28, 13, 3, 0], [19, 'fisherhut', 5, 5, 0, 1]],
-    gifts: { love: ['tuna', 'octopus', 'puffer', 'legend', 'goldfish'], like: ['sardine', 'bass', 'trout', 'salmon', 'bread'], hate: ['dandelion', 'gel'] },
-    hearts: { 3: async d => { await say(d.name, ['你钓鱼越来越有样子了！我帮你把鱼竿改良一下。'], d.look); S.toolLv.rod = 2; toast('鱼竿升级了！钓鱼更容易了。'); },
-      6: async d => { await say(d.name, ['这根是我珍藏的大师鱼竿，送给你！', '据说在下雪的湖里或者大海里，偶尔能钓到传说之鱼……'], d.look); S.toolLv.rod = 4; toast('鱼竿升级为大师鱼竿！'); } },
-    talk: async (npc) => {
-      const d = npc.def;
-      if (!S.flags.gotRod) {
-        await say(d.name, ['哟，生面孔啊。你是老星的孙辈？', '你爷爷以前经常和我一起钓鱼呢。这根旧鱼竿送给你吧！'], d.look);
-        if (addItem('rod', 1)) { S.flags.gotRod = true; await bigMessage('获得了 鱼竿！', '选中鱼竿后，面对水面按K抛竿。', 'rod'); await say(d.name, ['鱼上钩的时候会出现"!"，赶快按J！', '然后按住J让绿色的条往上，松开就往下，用它罩住鱼就能钓上来！', '池塘、河流、大海、雪湖里的鱼都不一样，多去试试吧。'], d.look); }
-        else toast('背包满了！');
-        return;
-      }
-      await chat(npc, ['大海里能钓到金枪鱼和章鱼，值不少钱哦。', '下雨天河里会有鲶鱼出没。', '赤焰山上有个湖，里面有金鳞鱼。', '钓鱼的诀窍就是耐心……还有手速！', '听说暗影之塔出现以后，海里的鱼都变少了……']);
-    } },
-  hu: { name: '小虎', look: { hair: '#2a2a2a', shirt: '#e8a030', pants: '#3a5a8a' },
-    sched: [[0, 'village', 22, 9, 0, 4]], wander: 4,
-    talk: async (npc) => chat(npc, ['我长大了也要像你一样去冒险！', '你知道吗？对着灵兽扔灵球，它越虚弱越容易收服！', '晚上村子里好安静……', '在菜单里可以看到当前的目标哦！按I打开菜单。', '把剑升级以后，打怪会快很多！铁匠铺在村子西南边。', '据说草原南边的草丛里，偶尔会有三种稀有的初始灵兽出没！']) },
-  granny: { name: '孙婆婆', look: { hair: '#d0d0d0', shirt: '#8a5a8a', pants: '#5a4a3a' },
-    sched: [[0, 'village', 9, 13, 0, 1]],
-    gifts: { love: ['potato', 'yam', 'pumpkin', 'snowyam', 'mushroom'], like: ['parsnip', 'herb', 'eggplant', 'winterroot'], hate: ['bone', 'gel'] },
-    hearts: { 5: async d => { await say(d.name, ['这是我们家祖传的养生秘方，告诉你吧……', '每天早睡早起，多吃蔬菜！哈哈哈。'], d.look); S.maxEnergy += 30; S.energy = S.maxEnergy; await bigMessage('体力上限 +30！', null, 'star'); } },
-    talk: async (npc) => {
-      const d = npc.def;
-      const day = S.year * 1000 + S.season * 100 + S.day;
-      if (S.flags.grannyDay !== day && hearts('granny') >= 1) {
-        S.flags.grannyDay = day;
-        const seeds = Object.values(CROPS).filter(c => c.seasons.includes(S.season) && c.id !== 'starfruit');
-        if (seeds.length) { const s = pick(seeds); await say(d.name, ['孩子，又来看我啦。这些种子拿去种吧！'], d.look); addItem(s.id + '_s', 3); toastItem(s.id + '_s', 3); return; }
-      }
-      await chat(npc, ['作物要每天浇水才会长大哦。', '好的土地需要用心照顾，就像你爷爷那样。', '冬天也有能种的作物，冬根和雪晶莓都不怕冷。', '我年轻的时候，村子里可热闹了……', '晚上别在外面待太晚，凌晨两点会累倒的！']);
-    } },
-  arena: { name: '竞技场主持人', look: { hair: '#f0d040', shirt: '#c83a3a', pants: '#2a2a32' },
-    sched: [[0, 'arena', 8, 2, 0, 0]],
-    talk: async (npc) => arenaTalk(npc) },
+  traveler: { name: '旅人', map: 'field', x: 24, y: 9, wander: 1, look: { hair: '#8a5a2a', shirt: '#6a7a4a', pants: '#4a4a3a', hat: '#8a6a3a' },
+    talk: async d => say(d.name, [pick(['南边的大裂谷有两格宽，普通人可跳不过去。', '我在草原西北的树洞旁边，看到过一个发光的树桩。', '每个地方都有藏起来的小人世界，里面有宝贝！'])], d.look) },
+  miner: { name: '矿工', map: 'mountain', x: 21, y: 13, wander: 1, look: { hair: '#4a3a2a', shirt: '#c08030', pants: '#3a3a3a', hat: '#e0c040' },
+    talk: async d => say(d.name, [S.items.bombs ? '你有炸弹？那块有裂缝的巨石，一炸就开！' : '山洞口被有裂缝的巨石堵住了。要是有炸弹就好了……'], d.look) },
+  scholar: { name: '学者', map: 'ruins', x: 22, y: 12, wander: 1, look: { hair: '#6a6a7a', shirt: '#3a3a6a', pants: '#2a2a3a' },
+    talk: async d => say(d.name, [pick(['暗影之塔里到处都是机关之眼，据说要用弓箭射开。', '遗迹西边的石墙上也有一只眼睛……后面好像藏着什么。', '暗影巫师用黑暗的护盾保护自己，只有箭能射穿它。'])], d.look) },
 };
 for (const k in NPCS) NPCS[k].id = k;
+function npcsForMap(id) { const out = []; for (const k in NPCS) { const d = NPCS[k]; if (d.map === id) out.push(new NPC(d, d.x * TS, d.y * TS - 4)); } return out; }
 
-async function chat(npc, lines) {
-  const d = npc.def;
-  const f = d.gifts ? friend(d.id) : null;
-  let first = false;
-  if (f && !f.talked) { f.talked = true; f.pts += 10; first = true; }
-  await say(d.name, [pick(lines)], d.look);
-  if (S.request && !S.request.done && S.request.who === d.id) await say(d.name, [`对了，我在告示板上发了委托：需要 ${ITEMS[S.request.id].name}×${S.request.n}。拜托你啦！`], d.look);
+// ============ 剧情 ============
+async function introScene(d) {
+  await say(d.name, ['你来啦！……你看，守护古树的叶子全都枯黄了。', '昨天夜里，暗影巫师偷走了古树的四颗【光之果实】，把它们藏进了四座神殿。', '没有光之果实，古树撑不了多久了……'], d.look);
+  Sfx.play('secret'); G.flash = 0.6; await wait(0.1); G.flash = 0;
+  Particles.add(G.player.cx(), G.player.cy() - 20, 30, '#a0ffa0', 60, 1);
+  await say('？？？', ['……喂！喂！这里，这里！'], LEAF_LOOK);
+  await say('小叶', ['呼……终于找到一个能看见我的人了！我是古树的精灵，叫我小叶就好。', '暗影巫师太强了，大人们都打不过他。但是……也许一个小小的勇者可以！', '我把古树的魔力借给你：站在【发光的树桩】上按 J，你就能变得和我一样小！', '变小以后，可以钻进谁都注意不到的小洞，去别人去不了的地方。', '我会一直待在你的帽子上。我们一起把光之果实找回来吧！'], LEAF_LOOK);
+  S.flags.gotLeaf = true;
+  await bigMessage('得到了 小叶的祝福！', '站在发光的树桩上按 J，可以变小 / 变大。', 'fruit');
+  await say(d.name, ['孩子，这件事就拜托你了。', '先去道场找剑师，他会给你一把剑。道场就在广场的东南边。'], d.look);
 }
-
-// ============ 初始灵兽 ============
-async function starterScene(npc) {
-  const d = npc.def;
-  await say(d.name, ['欢迎来到灵兽研究所！我是林博士。', '村长已经跟我说了你的事。外面的魔物越来越多，你需要一个可靠的伙伴。', '这里有三只灵兽，请从中选择一只吧！'], d.look);
-  const sts = ['sprig', 'ember', 'bubbo'];
-  const desc = { sprig: '草属性的【芽芽球】，性格温和，很能吃苦耐劳。', ember: '火属性的【火绒狐】，活泼好动，攻击力很强。', bubbo: '水属性的【水泡鱼】，防御力出众，很可靠。' };
-  while (true) {
-    for (const s of sts) await say(d.name, [desc[s]], SPECIES[s].look);
-    const c = await ask('选择哪一只？', ['芽芽球（草）', '火绒狐（火）', '水泡鱼（水）', '再听一遍介绍'], d.name, d.look);
-    if (c < 0 || c === 3) continue;
-    const s = sts[c];
-    const ok = await ask(`确定选择 ${SPECIES[s].name} 吗？`, ['就是它了！', '再想想'], null, SPECIES[s].look);
-    if (ok !== 0) continue;
-    const mon = makeMon(s, 5);
-    giveMon(mon); S.flags.gotStarter = true; S.flags.starter = s;
-    Sfx.play('item');
-    await bigMessage(`${SPECIES[s].name} 成为了你的伙伴！`, '它会跟在你身后一起冒险。');
-    break;
-  }
-  addItem('ball', 5); addItem('potion', 3);
-  await say(d.name, ['再送你5个灵球和3瓶回复药。', '在草丛里会遇到野生灵兽，把它们打虚弱后扔出灵球就能收服！', '按I打开菜单，可以查看灵兽和图鉴。'], d.look);
-  // 劲敌登场
-  const jie = G.ents.find(e => e.def && e.def.id === 'jie');
-  const jd = NPCS.jie;
-  await say(jd.name, ['等一下！我也要选！', `那我就要这只${SPECIES[starterCounter()].name}！属性正好克制你的！`, '来，我们来比一场吧！'], jd.look);
-  const rm = makeMon(starterCounter(), 5); rm.moves = ['tackle', 'growl']; rm.iv = [0, 0, 0, 0]; calcStats(rm); rm.hp = rm.maxhp;
-  const r = await startBattle({ trainer: { name: '劲敌 阿杰', team: [rm], reward: 200, loseLine: '什么？！我居然输了！' }, noWhiteout: true });
-  if (r === 'win') await say(jd.name, ['哼，这次算你运气好！下次我一定会赢的！'], jd.look);
-  else await say(jd.name, ['哈哈，我赢了！你还得多练练啊！'], jd.look);
-  healParty();
-  await say(d.name, ['真是精彩的对战！我帮你的灵兽恢复了体力。', '去和村长聊聊吧，他有重要的事要告诉你。'], d.look);
-  refreshNPCs();
+function hintFor() {
+  if (!S.flags.d1) return '第一颗光之果实在北边迷雾森林的神殿里。神殿被荆棘围着……听说荆棘下面有个小洞。';
+  if (!S.flags.d2) return '第二座神殿在镜湖的湖心岛上。镜湖在青草原的东边。';
+  if (!S.flags.d3) return '第三座神殿在岩石山道的山洞里，从青草原往北走就到了。';
+  if (!S.flags.d4) return '最后的暗影之塔在古代遗迹，要跳过青草原南边的大裂谷才能去。';
+  return '古树又活过来了！真是谢谢你。';
+}
+function goalText() {
+  if (!S.flags.gotLeaf) return '出门往右，去村子广场的守护古树下找长老。';
+  if (!S.flags.gotSword) return '去村子东南边的剑术道场，找剑师拿剑。';
+  if (!S.flags.d1) return '去村子北边的迷雾森林，进入森林神殿。（荆棘下有小洞：先在发光树桩上变小！）';
+  if (!S.flags.d2) return '去青草原东边的镜湖，用回旋镖打中湖心岛上的水晶开关，进入湖底神殿。';
+  if (!S.flags.d3) return '去青草原北边的岩石山道，用炸弹炸开洞口的巨石，进入山之洞窟。';
+  if (!S.flags.d4) return '用跳跃羽毛跳过青草原南边的大裂谷，前往古代遗迹的暗影之塔，打倒暗影巫师！';
+  const left = 8 - (S.flags.piecesFound || 0);
+  return left > 0 ? `古树复活了！世界上还藏着 ${left} 片心之碎片，去找找看吧。` : '你找齐了所有的心之碎片！真正的勇者！';
 }
 
-// ============ 训练家 ============
-const TRAINERS = [
-  { id: 't_m1', map: 'meadow', x: 14, y: 7, dir: 3, name: '捕虫少年 小明', look: { hair: '#2a2a2a', shirt: '#6aa83a', pants: '#8a6a3a', hat: '#e8d070' }, team: [['beetle', 4], ['beetle', 5]], reward: 120, intro: '我的虫虫们可厉害了！', lose: '虫虫们……对不起……' },
-  { id: 't_m2', map: 'meadow', x: 8, y: 15, dir: 0, name: '少女 花花', look: { hair: '#e8a0c0', shirt: '#f0e070', pants: '#e8e8f0' }, team: [['jelly', 5], ['chirp', 6]], reward: 150, intro: '你也是来看风景的吗？那先和我比一场吧！', lose: '呜……好强……' },
-  { id: 't_m3', map: 'meadow', x: 30, y: 24, dir: 2, name: '短裤小子 阿强', look: { hair: '#5a3a1a', shirt: '#e05050', pants: '#3a6ad0' }, team: [['mousy', 6], ['zapper', 7]], reward: 180, intro: '短裤是最棒的！来对战吧！', lose: '我的短裤……不对，我的灵兽！' },
-  { id: 't_f1', map: 'forest', x: 12, y: 13, dir: 3, name: '蘑菇猎人 阿木', look: { hair: '#6a4a2a', shirt: '#8a5a3a', pants: '#4a5a3a', hat: '#d84a4a' }, team: [['shroom', 9], ['shroom', 10]], reward: 300, intro: '这片林子里的蘑菇都是我的！', lose: '看来蘑菇也有不灵的时候……' },
-  { id: 't_f2', map: 'forest', x: 33, y: 18, dir: 2, name: '森林少女 萤', look: { hair: '#2a4a2a', shirt: '#e8e060', pants: '#4a8a4a' }, team: [['glowbug', 9], ['wisp', 10], ['beetle', 10]], reward: 330, intro: '森林的精灵会保佑我！', lose: '你的灵兽和你很亲近呢。' },
-  { id: 't_b1', map: 'beach', x: 18, y: 12, dir: 2, name: '泳者 小蓝', look: { hair: '#3a6ad0', shirt: '#4ac0e0', pants: '#3a6ad0' }, team: [['starfish', 13], ['jelly', 14]], reward: 500, intro: '游完泳正好热身！', lose: '我还是回去游泳吧……' },
-  { id: 't_b2', map: 'beach', x: 26, y: 14, dir: 0, name: '渔夫 老李', look: { hair: '#5a5a5a', shirt: '#6a8a5a', pants: '#4a3a2a', hat: '#c0a060' }, team: [['crabby', 14], ['turtle', 15], ['bubbo', 14]], reward: 550, intro: '钓鱼钓累了，来活动活动筋骨！', lose: '年轻人真厉害啊。' },
-  { id: 't_b3', map: 'beach', x: 12, y: 20, dir: 1, name: '冲浪少年 阿浪', look: { hair: '#f0d040', shirt: '#f08030', pants: '#3a8ad0' }, team: [['zapper', 15], ['starfish', 15], ['chirp', 16]], reward: 600, intro: '浪来了！我们也来一场吧！', lose: '被你拍在沙滩上了……' },
-  { id: 't_mt1', map: 'mountain', x: 21, y: 18, dir: 0, name: '登山家 老张', look: { hair: '#4a3a2a', shirt: '#c05030', pants: '#5a5a4a', hat: '#e0c040' }, team: [['pebble', 19], ['pebble', 20], ['ironhorn', 21]], reward: 900, intro: '在山上，只有强者才能前进！', lose: '这座山……欢迎你。' },
-  { id: 't_mt2', map: 'mountain', x: 29, y: 9, dir: 2, name: '火焰少年 炎', look: { hair: '#e04020', shirt: '#f0a030', pants: '#3a2a2a' }, team: [['salamand', 21], ['ember', 22]], reward: 1000, intro: '我的心在燃烧！', lose: '火……熄灭了……' },
-  { id: 't_mt3', map: 'mountain', x: 22, y: 6, dir: 0, name: '驯龙者 龙也', look: { hair: '#4a8a8a', shirt: '#2a4a6a', pants: '#2a2a32' }, team: [['drake', 23], ['swifty', 22]], reward: 1300, intro: '龙是最强的灵兽！你见识过吗？', lose: '你……竟然打败了龙！' },
-  { id: 't_s1', map: 'snow', x: 20, y: 18, dir: 0, name: '滑雪者 小冬', look: { hair: '#f0f0f0', shirt: '#e04060', pants: '#2a3a6a', hat: '#4060e0' }, team: [['snowball', 27], ['frostwolf', 28]], reward: 1600, intro: '雪原是我的主场！', lose: '冻僵了……' },
-  { id: 't_s2', map: 'snow', x: 14, y: 9, dir: 3, name: '冰之巫女 雪华', look: { hair: '#a0e0ff', shirt: '#ffffff', pants: '#a0c0e0' }, team: [['sprite', 29], ['icebear', 30], ['turtle', 29]], reward: 2000, intro: '暗影之塔的气息越来越强了……让我看看你的实力。', lose: '你就是传说中的勇者吗……' },
-];
-const TRAINER_BY_ID = {}; TRAINERS.forEach(t => TRAINER_BY_ID[t.id] = t);
-function trainerDef(t) {
-  return {
-    id: t.id, name: t.name, look: t.look, trainer: true, dir: t.dir,
-    talk: async (npc) => {
-      if (!S.trainers[t.id]) { await trainerBattle(npc, t); return; }
-      await say(t.name, [t.lose], t.look);
-    }
-  };
-}
-async function trainerBattle(npc, t) {
-  await say(t.name, [t.intro], t.look);
-  const r = await startBattle({ trainer: { name: t.name, team: makeTeam(t.team), reward: t.reward, loseLine: t.lose } });
-  if (r === 'win') S.trainers[t.id] = true;
-}
-function trainerSpotted(npc) {
-  if (!hasHealthyMon()) return;
-  const t = TRAINER_BY_ID[npc.def.id]; if (!t) return;
-  runScript(async () => {
-    Sfx.play('bite'); npc.emoteT = 0.8;
-    await wait(0.7);
-    const p = G.player, d = DIRS[npc.dir];
-    // 走向玩家
-    for (let i = 0; i < 200; i++) {
-      const dist = Math.abs(p.cx() - npc.cx()) + Math.abs(p.cy() - npc.cy());
-      if (dist < 20) break;
-      const ok = moveBody(npc, d[0] * 1.5, d[1] * 1.5, 'npc');
-      npc.frame = Math.floor(i / 6) % 2;
-      if (!ok) break;
-      await wait(1 / 60);
-    }
-    npc.frame = 0;
-    p.dir = [1, 0, 3, 2][npc.dir];
-    await trainerBattle(npc, t);
-  });
-}
-
-// ============ 竞技场 ============
-const ARENA = [
-  { name: '新人训练家 阿明', team: [['mousy', 8], ['chirp', 9]], reward: 300 },
-  { name: '虫使 小林', team: [['beetle', 13], ['glowbug', 14], ['beetle', 14]], reward: 600 },
-  { name: '水手 大海', team: [['jelly', 18], ['starfish', 19], ['crabby', 20]], reward: 1000 },
-  { name: '电气工程师 雷', team: [['zapper', 23], ['zapper', 24], ['thundra', 25]], reward: 1500 },
-  { name: '岩石壮汉 石头', team: [['pebble', 28], ['boulderon', 30], ['ironhorn', 30]], reward: 2200 },
-  { name: '火焰舞者 焰', team: [['salamand', 33], ['flarefox', 34], ['magmaliz', 36]], reward: 3000 },
-  { name: '冰雪女王 凝霜', team: [['snowball', 38], ['frostwolf', 40], ['fortoise', 40], ['icebear', 42]], reward: 4000 },
-  { name: '冠军 星河', team: [['skyhawk', 46], ['kingjelly', 46], ['seraph', 47], ['skydrake', 48], ['boulderon', 47], ['blazefox', 50]], reward: 8000, boss: true },
-];
-async function arenaTalk(npc) {
-  const d = npc.def;
-  if (!hasHealthyMon()) { await say(d.name, ['你的灵兽都没有力气了，先去灵兽中心恢复一下吧！'], d.look); return; }
-  if (S.arena >= ARENA.length) {
-    const c = await ask('冠军大人！要挑战大师赛吗？（对手非常强）', ['挑战！', '下次吧'], d.name, d.look);
-    if (c !== 0) return;
-    const lv = Math.min(90, 60 + (S.flags.masterWins || 0) * 3);
-    const pool = ['heavendr', 'seraph', 'nightmare', 'magmaliz', 'fortoise', 'kingcrab', 'icebear', 'thundra', 'toadking', 'tidaldra', 'blazefox', 'sylvan', 'vampbat', 'starmoth', 'coralstar'];
-    const team = shuffle(pool.slice()).slice(0, 6).map(s => makeMon(s, lv));
-    const r = await startBattle({ trainer: { name: '大师 ' + pick(['青龙', '白虎', '朱雀', '玄武', '麒麟']), team, reward: 6000 + lv * 100, loseLine: '不愧是冠军！', boss: true } });
-    if (r === 'win') S.flags.masterWins = (S.flags.masterWins || 0) + 1;
-    return;
-  }
-  const a = ARENA[S.arena];
-  const c = await ask(`欢迎来到灵兽竞技场！你目前的段位是 ${S.arena}/8。\n下一位对手：${a.name}（灵兽等级约 ${a.team[a.team.length - 1][1]}）`, ['开始挑战', '离开'], d.name, d.look);
-  if (c !== 0) return;
-  healParty();
-  const r = await startBattle({ trainer: { name: a.name, team: makeTeam(a.team), reward: a.reward, loseLine: '你很强！', boss: a.boss } });
-  if (r === 'win') {
-    S.arena++; healParty();
-    if (S.arena >= ARENA.length) { await say(d.name, ['不可思议！你打败了冠军星河！', '从今天起，你就是星露岛的灵兽冠军了！', '这是冠军的奖品！'], d.look); addItem('masterball', 1); addItem('maxpotion', 5); await bigMessage('成为了灵兽冠军！', '获得 大师球 和 全满药×5', 'star'); }
-    else await say(d.name, [`恭喜晋级！你的段位现在是 ${S.arena}/8。`, '灵兽们已经帮你恢复好了。随时欢迎挑战下一位！'], d.look);
-  }
-}
-
-// ============ 野外宝箱 ============
-const OW_CHESTS = {
-  forest: [{ cid: 'f1', x: 35, y: 15, item: 'heartc' }, { cid: 'f2', x: 4, y: 28, item: 'greatball', n: 3 }],
-  meadow: [{ cid: 'm1', x: 40, y: 13, item: 'superpotion', n: 3 }, { cid: 'm2', x: 4, y: 27, item: 'copper', n: 8 }],
-  beach: [{ cid: 'b1', x: 25, y: 19, item: 'heartc' }, { cid: 'b2', x: 3, y: 4, item: 'ultraball', n: 2 }],
-  mountain: [{ cid: 'mt1', x: 5, y: 4, item: 'heartc' }, { cid: 'mt2', x: 40, y: 26, item: 'gold', n: 5 }],
-  snow: [{ cid: 's1', x: 36, y: 26, item: 'heartc' }, { cid: 's2', x: 4, y: 26, item: 'diamond', n: 1 }],
-  farm: [],
-};
-
-// ============ NPC 位置 ============
-function npcLoc(def) {
-  if (def.where) return def.where();
-  if (!def.sched) return null;
-  const h = Math.floor(S.time / 60) % 24;
-  let cur = def.sched[0];
-  for (const e of def.sched) if (h >= e[0]) cur = e;
-  return [cur[1], cur[2], cur[3], cur[4], cur[5]];
-}
-function npcsForMap(mapId) {
-  const out = [];
-  for (const k in NPCS) {
-    const def = NPCS[k]; const loc = npcLoc(def);
-    if (!loc || loc[0] !== mapId) continue;
-    def.dir = loc[3]; def.wander = loc[4] != null ? loc[4] : def.wander;
-    out.push(new NPC(def, loc[1] * TS, loc[2] * TS - 4));
-  }
-  for (const t of TRAINERS) if (t.map === mapId) out.push(new NPC(trainerDef(t), t.x * TS, t.y * TS - 4));
-  return out;
-}
-function refreshNPCs() {
-  if (!G.map) return;
-  const want = npcsForMap(G.map.id).filter(n => NPCS[n.def.id]);
-  const wantIds = want.map(n => n.def.id);
-  for (const e of G.ents) if (e.npc && NPCS[e.def.id] && !wantIds.includes(e.def.id)) e.dead = true;
-  for (const n of want) if (!G.ents.some(e => e.npc && !e.dead && e.def.id === n.def.id)) G.ents.push(n);
-}
-
-// ============ 调查/交互 ============
-function tryInteract(p) {
-  const d = DIRS[p.dir];
-  const px = p.cx() + d[0] * 12, py = p.cy() + d[1] * 12;
+// ============ 交互 ============
+function findInteract(p) {
+  const d = DIRS[p.dir], px = p.cx() + d[0] * 12, py = p.cy() + d[1] * 12;
   const near = (e, x, y) => { const b = e.box(); return x >= b.x - 4 && x <= b.x + b.w + 4 && y >= b.y - 5 && y <= b.y + b.h + 5; };
-  for (const e of G.ents) {
-    if (e.dead) continue;
-    if (e.npc && near(e, px, py)) { talkTo(e); return true; }
-    if (e.interact && near(e, px, py)) { if (e.onInteract()) return true; }
-  }
-  const tx = Math.floor(px / TS), ty = Math.floor(py / TS);
-  const t = tileProps(tx, ty);
-  if (!t) return false;
-  if (t.name === 'COUNTER') {
-    const qx = px + d[0] * 16, qy = py + d[1] * 16;
-    for (const e of G.ents) if (e.npc && !e.dead && near(e, qx, qy)) { talkTo(e); return true; }
-  }
-  // 收获
-  const [fx, fy] = p.facingTile();
-  if (G.map.isFarm && S.farm.crops[farmKey(fx, fy)]) { harvestAt(fx, fy); return true; }
+  for (const e of G.ents) { if (e.dead) continue; if ((e.npc || (e.interact && !e.hidden)) && near(e, px, py)) return { ent: e }; }
+  const tx = Math.floor(px / TS), ty = Math.floor(py / TS), t = tileProps(tx, ty);
+  if (!t) return null;
+  if (t.name === 'COUNTER') { const qx = px + d[0] * 16, qy = py + d[1] * 16; for (const e of G.ents) if (e.npc && !e.dead && near(e, qx, qy)) return { ent: e }; }
   const idx = ty * G.map.w + tx;
-  if (G.map.signs[idx]) { const txt = G.map.signs[idx]; runScript(async () => { if (txt === '【村告示板】') await boardScript(); else await say(null, [txt]); }); return true; }
-  if (t.name === 'BED' || t.name === 'BEDB') { runScript(sleepInBed); return true; }
-  if (t.pc) { runScript(async () => { if (!S.party.length) { await say(null, ['电脑上显示着"灵兽寄存系统"。你还没有灵兽。']); return; } await say(null, ['打开了灵兽寄存系统。']); await openPC(); }); return true; }
-  if (t.healer) { runScript(async () => { await say(null, ['这是灵兽治疗机。和柜台的美玲说话就能使用。']); }); return true; }
-  if (t.name === 'TV') { runScript(async () => say(null, [pick([`【天气预报】明天的天气是……${S.tomorrow === 'rain' ? '雨天！不用浇水了！' : '晴天！'}`, `【天气预报】明天：${S.tomorrow === 'rain' ? '有雨' : '晴朗'}。`]), pick(['【农业频道】夏天的蓝莓一次能收好几颗，很赚钱哦！', '【灵兽频道】属性相克可以造成双倍伤害！', '【冒险频道】地下城里的宝箱有时要清空房间的怪物才会出现。', '【农业频道】高级洒水器可以浇灌周围8格！', '【冒险频道】推动石块压住地上的机关，会有好事发生。'])])); return true; }
-  if (t.name === 'STOVE') { runScript(async () => say(null, ['厨房收拾得很干净。'])); return true; }
-  if (t.name === 'BOOKS' || t.name === 'SHELF') { runScript(async () => say(null, [pick(['书架上摆满了关于灵兽的书。', '《星露岛的传说》：远古时代，四只守护灵将暗影封印在了北方……', '《农夫手册》：每种作物都有适合的季节。', '《冒险者笔记》：头目都有弱点，试试用不同的道具攻击它们！'])])); return true; }
-  if (t.lock) { tryUnlock(tx, ty, t); return true; }
-  if (t.name === 'FOUNT') { runScript(async () => say(null, ['清澈的泉水。据说向喷泉许愿会带来好运。'])); return true; }
+  if (G.map.signs[idx]) return { sign: G.map.signs[idx] };
+  if (t.name === 'BED' || t.name === 'BEDB') return { bed: true };
+  if (t.lock) return { lock: [tx, ty, t] };
+  return null;
+}
+function tryInteract(p) {
+  const f = findInteract(p);
+  if (!f) return false;
+  if (f.ent && f.ent.npc) { talkTo(f.ent); return true; }
+  if (f.ent) return f.ent.onInteract();
+  if (f.sign) { runScript(() => say(null, [f.sign])); return true; }
+  if (f.bed) { runScript(async () => { const c = await ask('要躺下休息一会儿吗？（恢复生命并存档）', ['休息', '不了']); if (c !== 0) return; await fadeOut(0.6); S.hp = S.maxhp; saveGame(true); await wait(0.4); await fadeIn(0.6); toast('生命全部恢复，已存档'); }); return true; }
+  if (f.lock) { tryUnlock(...f.lock); return true; }
   return false;
 }
 function talkTo(npc) {
-  const p = G.player;
-  if (npc.def.trainer && !S.trainers[npc.def.id] && !hasHealthyMon()) { runScript(async () => say(npc.def.name, ['你的灵兽都没力气了，先去恢复吧！'], npc.def.look)); return; }
-  npc.dir = [1, 0, 3, 2][p.dir]; npc.mv = null; npc.frame = 0; npc.talking = true;
-  runScript(async () => {
-    try {
-      await npc.def.talk(npc);
-      if (npc.def.gifts) { await giftFlow(npc); await checkHearts(npc.def); }
-      await checkRequestDelivery(npc.def);
-    } finally { npc.talking = false; }
-  });
-}
-async function giftFlow(npc) {
-  const def = npc.def, f = friend(def.id);
-  const slot = S.inv[S.sel]; if (!slot || f.gifted) return;
-  const it = ITEMS[slot.id];
-  if (['tool', 'key', 'ammo', 'craft'].includes(it.type)) return;
-  const c = await ask(`要把手中的 ${it.name} 送给${def.name}吗？`, ['送给Ta', '不了']);
-  if (c !== 0) return;
-  removeItem(it.id, 1); f.gifted = true;
-  let pts = 20, line = '谢谢你的礼物。';
-  if (def.gifts.love.includes(it.id)) { pts = 80; line = '哇！这是我最喜欢的东西！太谢谢你了！'; }
-  else if (def.gifts.like.includes(it.id)) { pts = 45; line = '谢谢！我很喜欢这个！'; }
-  else if (def.gifts.hate.includes(it.id)) { pts = -30; line = '呃……这个……我不太需要……'; }
-  f.pts = clamp(f.pts + pts, 0, 1000);
-  if (pts > 0) Sfx.play('heal');
-  await say(def.name, [line], def.look);
-}
-async function checkHearts(def) {
-  if (!def.hearts) return;
-  const f = friend(def.id), h = hearts(def.id);
-  for (const k in def.hearts) if (h >= +k && !f.ev[k]) { f.ev[k] = true; await def.hearts[k](def); }
-}
-async function checkRequestDelivery(def) {
-  const r = S.request;
-  if (!r || r.done || r.who !== def.id) return;
-  if (countItem(r.id) < r.n) return;
-  const c = await ask(`要把 ${ITEMS[r.id].name}×${r.n} 交给${def.name}吗？（委托报酬 ${r.reward}G）`, ['交付', '不了']);
-  if (c !== 0) return;
-  removeItem(r.id, r.n); S.gold += r.reward; r.done = true; friend(def.id).pts += 60;
-  Sfx.play('coin');
-  await say(def.name, [`太好了，帮大忙了！这是报酬 ${r.reward}G，请收下！`], def.look);
-}
-async function boardScript() {
-  const r = S.request;
-  if (!r) { S.request = makeRequest(); }
-  const q = S.request;
-  if (q.done) { await say(null, ['【村告示板】今天的委托已经完成了。明天再来看看吧！']); return; }
-  await say(null, [`【村告示板】委托人：${NPCS[q.who].name}\n「需要 ${ITEMS[q.id].name} ×${q.n}，报酬 ${q.reward}G。」\n（直接交给${NPCS[q.who].name}即可。你现在有 ${countItem(q.id)} 个）`]);
+  npc.dir = [1, 0, 3, 2][G.player.dir]; npc.mv = null; npc.frame = 0; npc.talking = true;
+  runScript(async () => { try { await npc.def.talk(npc.def); } finally { npc.talking = false; } });
 }
 function tryUnlock(tx, ty, t) {
   const d = dngState(G.map.dng);
-  if (t.lock === 'key') { if (d.keys > 0) { d.keys--; openDoorAt(tx, ty); } else toast('门锁住了。需要一把小钥匙。'); }
+  if (t.lock === 'key') { if (d.keys > 0) { d.keys--; openDoorAt(tx, ty); } else toast('门锁着。需要一把小钥匙。'); }
   else if (t.lock === 'boss') { if (d.bossKey) openDoorAt(tx, ty); else toast('一扇巨大的门。需要头目钥匙。'); }
 }
 
-// ============ 野生遭遇 ============
-function wildEncounter() {
-  const enc = G.map.enc.filter(e => e[3] > 0);
-  let tot = 0; for (const e of enc) tot += e[3];
-  let r = Math.random() * tot, e = enc[0];
-  for (const x of enc) { r -= x[3]; if (r <= 0) { e = x; break; } }
-  let sp = e[0];
-  // 夜晚更容易遇到幽灵和蝙蝠
-  if (G.map.outdoor && S.time > 20 * 60 && chance(0.25)) sp = pick(['wisp', 'bat', 'glowbug']);
-  const lv = randi(e[1], e[2]);
-  const mon = makeMon(evoLine(sp, lv) === sp ? sp : sp, lv);
+// ============ 宝箱与奖励 ============
+const OW_CHESTS = {
+  field: [{ cid: 'fcrack', x: 33, y: 2, item: 'heartp' }],
+  forest: [{ cid: 'fledge', x: 30, y: 5, item: 'heartp' }],
+  ruins: [{ cid: 'reye', x: 5, y: 6, item: 'heartp' }],
+  home: [{ cid: 'start', x: 1, y: 3, item: 'rupee20' }],
+};
+async function gainPiece() {
+  S.flags.piecesFound = (S.flags.piecesFound || 0) + 1;
+  S.pieces++;
+  await bigMessage('得到了 心之碎片！', S.pieces >= 4 ? '集齐了 4 片！' : `再集齐 ${4 - S.pieces} 片，生命上限就会 +1。`, 'heartp');
+  if (S.pieces >= 4) { S.pieces = 0; S.maxhp += 2; S.hp = S.maxhp; await bigMessage('生命上限 +1！', '心之碎片合成了一颗完整的心。', 'heartc'); }
+}
+const ITEM_GET = {
+  boomerang: '按 K 扔出去，它会飞回来。\n能打晕敌人、打中远处的水晶开关！',
+  bombs: '按 K 放下炸弹。能炸开有裂缝的墙和岩石！\n（Q / E 切换道具）',
+  feather: '按 K 跳起来！可以跳过两格宽的深坑。',
+  bow: '按 K 射箭。射中机关之眼可以开门！',
+};
+function openChestReward(spec) {
   runScript(async () => {
-    Sfx.play('encounter');
-    for (let i = 0; i < 3; i++) { G.flash = 1; await wait(0.08); G.flash = 0; await wait(0.08); }
-    await startBattle({ wild: mon });
+    Sfx.play('secret'); await wait(0.25);
+    const it = spec.item;
+    if (it === 'key') { dngState(G.map.dng).keys++; return bigMessage('得到了 小钥匙！', '可以打开一扇锁住的门。', 'key'); }
+    if (it === 'bosskey') { dngState(G.map.dng).bossKey = true; return bigMessage('得到了 头目钥匙！', '可以打开头目房间的大门。', 'bosskey'); }
+    if (ITEM_GET[it]) {
+      giveItem(it); S.equip = it;
+      if (it === 'bombs') S.bombs = 10; if (it === 'bow') S.arrows = 30;
+      await bigMessage('得到了 ' + ITEMS[it].name + '！', ITEM_GET[it], it);
+      return say('小叶', [it === 'boomerang' ? '太好了！刚才那扇蓝色的栅栏门，房间里应该有个水晶开关……用回旋镖打它试试！' : '新道具已经装备在 K 键上了。按 Q / E 可以切换哦。'], LEAF_LOOK);
+    }
+    if (it === 'heartp') return gainPiece();
+    if (it === 'wallet') { S.wallet = S.wallet < 300 ? 300 : 999; return bigMessage('得到了 大钱包！', `现在最多可以装 ${S.wallet} 颗宝石。`, 'wallet'); }
+    if (it === 'rupee20') { addRupees(20); return bigMessage('得到了 红宝石！', '价值 20 颗绿宝石。', 'rupee20'); }
+    // 普通宝箱
+    const r = Math.random();
+    if (r < 0.3 && S.items.bombs) { S.bombs = Math.min(S.maxBombs, S.bombs + 5); return bigMessage('得到了 炸弹 ×5！', null, 'bombs'); }
+    if (r < 0.55 && S.items.bow) { S.arrows = Math.min(S.maxArrows, S.arrows + 10); return bigMessage('得到了 箭 ×10！', null, 'arrow'); }
+    addRupees(20); return bigMessage('得到了 红宝石！', '价值 20 颗绿宝石。', 'rupee20');
   });
 }
 
-// ============ 目标 ============
-function goalText() {
-  if (!S.flags.gotSword) return '打开小屋里爷爷留下的宝箱。';
-  if (!S.flags.metElder) return '出门往东走，去晨星村找村长王伯。';
-  if (!S.flags.gotStarter) return '去晨星村的灵兽研究所（绿色屋顶）找林博士，领取灵兽伙伴。';
-  if (!S.flags.d1) return '前往农场北边迷雾森林深处的【森林神殿】，夺回森之水晶。\n（别忘了照顾农场：开垦→播种→浇水→收获→出货）';
-  if (!S.flags.d2) return '用弓箭射中珊瑚海滩（晨星村东边）悬崖上的封印之眼，进入【潮汐洞窟】。\n顺便去找渔夫阿海拿一根鱼竿吧。';
-  if (!S.flags.d3) return '学会了游泳！游过晨星村北边的河，前往赤焰山的【熔岩矿坑】。';
-  if (!S.flags.d4) return '用炸弹炸开赤焰山北边的裂缝巨石，前往霜雪高原的【冰晶神殿】。';
-  if (!S.flags.d5) return '用火焰杖融化霜雪高原北边暗影之塔入口的寒冰，打败暗影魔王！';
-  return '星露岛恢复了和平！继续经营农场、完成图鉴、挑战竞技场和矿洞深处（第100层以下据说有星灵出没）吧！';
+// ============ 头目 ============
+function bossDefeated(b) {
+  runScript(async () => {
+    const id = G.map.dng, D = DUNGEONS[id], d = dngState(id);
+    Music.play(null); Music.want = null;
+    for (let i = 0; i < 6; i++) { Particles.add(b.cx() + rand(-16, 16), b.cy() + rand(-16, 16), 18, pick(['#ffe060', '#ff8040', '#ffffff']), 90, 0.7); Sfx.play('bomb'); G.shake = 0.3; await wait(0.22); }
+    for (const e of G.ents) if (e instanceof Enemy || e instanceof Proj) e.dead = true;
+    d.boss = true; S.flags[id] = true; S.fruits++;
+    openShutters();
+    await wait(0.5);
+    S.maxhp += 2; S.hp = S.maxhp;
+    await bigMessage('得到了 心之容器！', '生命上限 +1', 'heartc');
+    await bigMessage(`找回了 光之果实！（${S.fruits} / 4）`, '果实里散发着温暖的光芒。', 'fruit');
+    if (id === 'd4') return endingScene();
+    const next = { d1: '还剩三颗！下一颗在青草原东边的镜湖。湖心岛上的水晶开关……用回旋镖试试！', d2: '还剩两颗！有了炸弹，就能炸开岩石山道的巨石了。山道在青草原的北边。', d3: '只剩最后一颗了！用跳跃羽毛跳过青草原南边的大裂谷，暗影巫师就在古代遗迹里！' }[id];
+    await say('小叶', ['做得好！古树的力量又恢复了一点。', next], LEAF_LOOK);
+    await fadeOut(0.6);
+    S.tiny = false;
+    loadMap(D.from.map, D.from.x * TS, D.from.y * TS - 4, 0);
+    await fadeIn(0.6);
+  });
 }
-
-// ============ 杂货店货架 ============
-function storeStock() {
-  const st = [];
-  for (const id in CROPS) { const c = CROPS[id]; if (!c.seasons.includes(S.season)) continue; if (id === 'starfruit' && !S.flags.d2) continue; st.push(id + '_s'); }
-  st.push('ball', 'potion', 'antidote', 'bread');
-  if (S.flags.d1) st.push('greatball', 'superpotion', 'revive', 'salad');
-  if (S.flags.d3) st.push('ultraball', 'maxpotion', 'energydrink');
-  if (S.flags.bow) st.push('arrow');
-  if (S.flags.bombs) st.push('bomb');
-  return st;
+async function endingScene() {
+  const w = BOSS_KINDS.wizard;
+  await say(w.name, ['「不可能……被一个小不点打败了……」', '「古树的光……好刺眼……」'], w.look);
+  await say('小叶', ['我们做到了！四颗光之果实都找回来了！', '快回村子吧，古树在等着我们！'], LEAF_LOOK);
+  await fadeOut(1);
+  S.flags.ending = true; S.tiny = false;
+  loadMap('village', 18 * TS, 9 * TS - 4, 1);
+  await new Promise(res => UI.push(new CreditsUI(res)));
+  await fadeIn(1);
+  await say(NPCS.elder.name, ['古树……重新长出新叶了！谢谢你，小小的勇者！'], NPCS.elder.look);
+  await say('小叶', ['冒险告一段落啦。不过世界上还有没找到的心之碎片哦！', '我会一直陪着你的。'], LEAF_LOOK);
+  saveGame(true);
 }

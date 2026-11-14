@@ -1,6 +1,6 @@
 'use strict';
 // ============ 基础常量与工具 ============
-const TS = 16, VW = 480, VH = 270;
+const TS = 16, VW = 320, VH = 180;
 const FONT = '"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC","Noto Sans SC","Source Han Sans SC","WenQuanYi Micro Hei",sans-serif';
 
 function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
